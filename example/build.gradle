@@ -1,0 +1,6 @@
+plugins {
+//  id "king.shellspider" version "0.1"  
+}
+
+group = "king.example"
+description = "脚本蜘蛛示例工程"
