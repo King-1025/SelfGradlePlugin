@@ -3,7 +3,7 @@ plugins {
     id 'com.gradle.plugin-publish' version '0.10.0' 
 }
 
-buildDir new File(rootDir.toString()+"/plugin/pulgin-build")
+buildDir new File(rootDir.toString()+"/plugin/plugin-build")
 
 description "脚本蜘蛛插件工程"
 group "king.shellspider"                                       
