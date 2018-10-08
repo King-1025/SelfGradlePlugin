@@ -1,0 +1,4 @@
+task updateRepo(type: Copy, group: "Tools", description: "更新仓库") {
+    from "$rootDir/plugin/plugin-build/libs"
+    into "$rootDir/repo"
+}

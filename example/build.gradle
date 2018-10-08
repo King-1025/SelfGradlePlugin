@@ -1,6 +1,14 @@
-plugins {
-//  id "king.shellspider" version "0.1"  
+buildscript { 
+   repositories {
+        flatDir name:"repo", dirs:project.ext.repo
+   }
+   dependencies {
+        classpath name:"spider-plugin", version:"$version"
+   }
 }
+
+apply plugin:"king.shellspider"
 
 group = "king.example"
 description = "脚本蜘蛛示例工程"
+

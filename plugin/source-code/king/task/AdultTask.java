@@ -3,9 +3,12 @@ package king.task;
 import org.gradle.api.Task;
 import org.gradle.api.Project;
 
+import javax.inject.Inject;
+
 public class AdultTask extends SpiderTask{
   private final static String DEFAULT_DESCRIPTION="成年";
   
+  @Inject
   public AdultTask(Project project){
      this(project,DEFAULT_DESCRIPTION);
   }

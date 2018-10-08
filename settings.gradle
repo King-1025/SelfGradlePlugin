@@ -1,1 +1,11 @@
-include "plugin","example"
+include "plugin"
+
+def pluginJarPath=project(rootProject.getPath()).ext.repo+File.pathSeparator+project(rootProject.getPath()).ext.baseName+"-"+project("plugin").version
+
+if (file(pluginJarPath).exists()){
+   include "example"
+}else{
+   project("plugin").build
+   rootProject.updateRepo  
+   include "example"
+}

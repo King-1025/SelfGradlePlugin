@@ -5,5 +5,10 @@ allprojects {
 }
 
 subprojects{
-  version "0.1"
+    version "0.1.0-SNAPSHOT"
 }
+
+apply from:"gradle/tools.gradle"
+
+project.ext.baseName="spider-plugin"
+project.ext.repoDir="repo"

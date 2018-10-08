@@ -3,14 +3,22 @@ plugins {
     id 'com.gradle.plugin-publish' version '0.10.0' 
 }
 
-buildDir new File(rootDir.toString()+"/plugin/plugin-build")
-
+jar {
+  baseName "spider-plugin"
+}
+buildDir "$projectDir/plugin-build"
 description "脚本蜘蛛插件工程"
-group "king.shellspider"                                       
+group "king.shellspider" 
+
+javadoc.enabled false
+compileTestJava.enabled false
+processTestResources.enabled false                        
+testClasses.enabled false
+uploadArchives.enabled false
+test.enabled false
+check.enabled false
 
 pluginUnderTestMetadata.enabled false
-test.enabled false
-javadoc.enabled false
 
 sourceSets {
   main {
@@ -24,8 +32,8 @@ sourceSets {
 }
 
 pluginBundle {
-    website = 'https://github.com/King-1025/SelfGradlePlugin'
-    vcsUrl = 'https://github.com/King-1025/SelfGradlePlugin.git'
+    website = 'http://www.gradle.org/'
+    vcsUrl = 'https://github.com/King-1025/SelfGradlePlugin'
     tags = ['shell', 'template','spider']
 }
 
@@ -39,68 +47,4 @@ gradlePlugin {
         }
     }
 }
-/*
-project.ext.show={                      
-    tag,message->System.out.println(tag+" ---> "+message)
-}
-def show(String tag,String message){
-    project.ext.show(tag,message)
-}
-tasks.create("showProjectProperty",{
- Project[] projects=project.allprojects.toArray()
- for(int i=0;i<projects.size();i++)
-    show(i+"-project:",projects[i])
- 
- Project pro=projects[0]
 
- File dir=pro.buildDir;
- if(dir.exists()){
-   show("buildDir:",dir.getAbsolutePath())
- }else{
-   dir.mkdirs()
- }
-
- File file=pro.buildFile;
- if(file.exists()&&file.isFile()){
-    show("buildFile:",file.toURI())
- }else{
-    show("buildFile:","不存在或者不是文件")
- }
-
- ScriptHandler shd=pro.buildscript
- show("buildscript.sourceURI:",shd.getSourceURI())
- 
- Convention ct=pro.convention
- Map<String,Object> plugins=ct.getPlugins()
- Set<String> sst=plugins.keySet()
- for(String key in sst){
-    show(key+":",plugins.get(key).getClass().getName())
- }
-  
- pro.defaultTasks.add("fun0")
- pro.defaultTasks.add("fun1")
- List<String> deftasks=pro.defaultTasks
- for(String name in deftasks){
-    show("defaultTask:",name)
- }
-
- show("description:",pro.description)
-
- show("gradle.version:",pro.gradle.gradleVersion)
-
- show("name:",pro.name)
-
- show("current log level:",pro.logging.getLevel()) 
-})
-
-project.ext.fun0={
- show("fun0","I am called.")
-}
-
-project.ext.fun1={
- show("fun1","I am called.")
-}
-
-tasks.create("fun0",fun0)
-project.getTasks().create("fun1",fun1) i
-*/
