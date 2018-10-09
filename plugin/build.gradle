@@ -4,21 +4,15 @@ plugins {
 }
 
 jar {
-  baseName "spider-plugin"
+  baseName rootProject.ext.spiderPluginName
+  version rootProject.ext.spiderPluginVersion
 }
+
 buildDir "$projectDir/plugin-build"
+
+version="0.1.0"
+group="king.plugin"
 description "脚本蜘蛛插件工程"
-group "king.shellspider" 
-
-javadoc.enabled false
-compileTestJava.enabled false
-processTestResources.enabled false                        
-testClasses.enabled false
-uploadArchives.enabled false
-test.enabled false
-check.enabled false
-
-pluginUnderTestMetadata.enabled false
 
 sourceSets {
   main {
@@ -31,20 +25,46 @@ sourceSets {
   }
 }
 
+gradlePlugin {
+   plugins {
+        shellSpider {
+           id = 'king.shellspider'
+           implementationClass = 'king.plugin.ShellSpiderPlugin'
+        }
+   }
+}
+
 pluginBundle {
     website = 'http://www.gradle.org/'
     vcsUrl = 'https://github.com/King-1025/SelfGradlePlugin'
-    tags = ['shell', 'template','spider']
-}
-
-gradlePlugin {
     plugins {
         shellSpider {
-            id = 'king.shellspider'
-            displayName = '脚本蜘蛛'
-            description = '一个生成脚本蜘蛛的插件'
-            implementationClass = 'king.plugin.ShellSpiderPlugin'
-        }
-    }
+           displayName = '脚本蜘蛛'
+           description = '一个生成脚本蜘蛛的插件'
+           tags = ['shell', 'template','spider']
+           version = '1.0.1'
+        }   
+    } 
 }
 
+task updateRepo(type:Copy){
+    group "Tools"
+    description "update plugin repository"
+    from (project.jar.destinationDir){
+        include project.jar.archiveName
+    }
+    into rootProject.ext.pluginRepo
+}
+
+def disableTasks={
+    javadoc.enabled false
+    compileTestJava.enabled false
+    processTestResources.enabled false 
+    testClasses.enabled false
+    uploadArchives.enabled false
+    test.enabled false
+    check.enabled false
+    pluginUnderTestMetadata.enabled false
+}
+
+disableTasks()

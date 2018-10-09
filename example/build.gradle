@@ -1,14 +1,13 @@
-buildscript { 
-   repositories {
-        flatDir name:"repo", dirs:project.ext.repo
-   }
-   dependencies {
-        classpath name:"spider-plugin", version:"$version"
-   }
+group = "king.example"                                         
+description = "脚本蜘蛛示例工程"
+
+buildscript{
+    repositories {
+       flatDir dirs:"$rootDir/repo-plugin"
+    }
+    dependencies {
+       classpath name:rootProject.ext.spiderPluginName, version:rootProject.ext.spiderPluginVersion
+    }
 }
 
 apply plugin:"king.shellspider"
-
-group = "king.example"
-description = "脚本蜘蛛示例工程"
-

@@ -1,14 +1,9 @@
-allprojects {
+subprojects {
   repositories {
      jcenter()    
   }
 }
 
-subprojects{
-    version "0.1.0-SNAPSHOT"
-}
-
-apply from:"gradle/tools.gradle"
-
-project.ext.baseName="spider-plugin"
-project.ext.repoDir="repo"
+ext.pluginRepo="$rootDir/repo-plugin"
+ext.spiderPluginName="spider"
+ext.spiderPluginVersion="0.1.0-SNAPSHOT"
