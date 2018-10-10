@@ -10,8 +10,8 @@ jar {
 
 buildDir "$projectDir/plugin-build"
 
-version="0.1.0"
-group="king.plugin"
+version="0.0.0-SNAPSHOT"
+//group="king.plugin"
 description "脚本蜘蛛插件工程"
 
 sourceSets {
@@ -28,21 +28,21 @@ sourceSets {
 gradlePlugin {
    plugins {
         shellSpider {
-           id = 'king.shellspider'
+           id = 'king.shspider'
            implementationClass = 'king.plugin.ShellSpiderPlugin'
         }
    }
 }
 
 pluginBundle {
-    website = 'http://www.gradle.org/'
-    vcsUrl = 'https://github.com/King-1025/SelfGradlePlugin'
+    website='https://github.com/King-1025/SelfGradlePlugin'
+    vcsUrl='https://github.com/King-1025/SelfGradlePlugin.git'
     plugins {
         shellSpider {
            displayName = '脚本蜘蛛'
            description = '一个生成脚本蜘蛛的插件'
            tags = ['shell', 'template','spider']
-           version = '1.0.1'
+           version = '0.0-zero'
         }   
     } 
 }
