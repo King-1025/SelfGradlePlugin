@@ -47,6 +47,7 @@ pluginBundle {
     } 
 }
 
+
 task updateRepo(type:Copy){
     group "Tools"
     description "update plugin repository"
@@ -56,6 +57,8 @@ task updateRepo(type:Copy){
     into rootProject.ext.pluginRepo
 }
 
+updateRepo.dependsOn jar
+
 def disableTasks={
     javadoc.enabled false
     compileTestJava.enabled false
@@ -63,8 +66,9 @@ def disableTasks={
     testClasses.enabled false
     uploadArchives.enabled false
     test.enabled false
-    check.enabled false
     pluginUnderTestMetadata.enabled false
+    //publishPluginJar.enabled false
+    //publishPluginJavaDocsJar.enabled false
 }
 
 disableTasks()

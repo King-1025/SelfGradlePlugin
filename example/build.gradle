@@ -10,4 +10,11 @@ buildscript{
     }
 }
 
-apply plugin:"king.shellspider"
+apply plugin:"king.shspider"
+
+environmentCheck.message "environmentCheck is called."
+
+shspider {
+  spiderName="Hi"
+  println spiderName
+}
