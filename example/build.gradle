@@ -15,17 +15,17 @@ apply plugin:"king.shspider"
 shspider {
 
   nest {
-       name="xxx"
+       name="vgjnhh"
   }
 
   spiders {
       spider {
-       //  master=["91video","doubiSSR"]
+         master=["_91video","doubiSSR"]
       }
   }
 
   web {
-     91video {
+     _91video {
         config="91video.yaml"
      }
      doubiSSR {
