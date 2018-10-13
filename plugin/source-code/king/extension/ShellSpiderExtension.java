@@ -1,50 +1,43 @@
 package king.extension;
 
 import org.gradle.api.Project;
+import org.gradle.api.Action;
+import org.gradle.api.NamedDomainObjectContainer;
 
-import java.io.File;
-import javax.inject.Inject;
+import king.model.SpiderNest;
+import king.model.Spider;
+import king.model.Space;
 
 public class ShellSpiderExtension extends BasedExtension{
-   private String spiderName;
-   private String spiderDescription;
-   private String spiderVersion;
-   private File rootDir;
-   private String curl;
-   private String sed;
-   private String awk;
-   private String ua;
-   private String targetSite;
-   private File outputDir;
-   private String saveName;
-   private boolean enableInternalUA;
-   private File actionDir;
-
-   private final static String DEFAULT_OUTPUT_DIR="output";
-   private final static String DEFAULT_ACTION_DIR="action";
+   private SpiderNest nest;
+   private final NamedDomainObjectContainer<Spider> spiders;
+   private final NamedDomainObjectContainer<Space> web;
+   private final static String BLOCK_NEST="nest";
    
-   @Inject
    public ShellSpiderExtension(Project project){
-         target=project;
-         initSpiderDetails(); 
+         setProject(project);
+         this.nest=block(BLOCK_NEST,SpiderNest.class);
+         this.spiders=getProject().container(Spider.class);
+         this.web=getProject().container(Space.class);
+   }
+   
+   public SpiderNest getNest(){
+         return nest;
+   }
+   
+   public NamedDomainObjectContainer<Spider> getSpiders(){
+         return spiders;
    }
 
-   private void initSpiderDetails(){
-         spiderName=target.getName();
-         spiderDescription=target.getDescription();
-         spiderVersion=String.valueOf(target.getVersion());
-         
-         rootDir=target.getRootDir();
-         actionDir=new File(rootDir.toString()+rootDir.pathSeparator+"action");
-         outputDir=new File(rootDir.toString()+rootDir.pathSeparator+"output");
-         saveName="";         
-   }
-  
-   public String getSpiderName(){
-      return spiderName;
+   public NamedDomainObjectContainer<Space> getWeb(){
+         return web;
    }
 
-   public void setSpiderName(String spiderName){
-      this.spiderName=spiderName;
+   public void spiders(Action<? super NamedDomainObjectContainer<Spider>> action){
+         action.execute(spiders);
    }
+
+   public void web(Action<? super NamedDomainObjectContainer<Space>> action){
+        action.execute(web);
+  }
 }

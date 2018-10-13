@@ -11,12 +11,17 @@ import king.task.GrowTask;
 import king.task.AdultTask;
 
 public class ShellSpiderPlugin implements Plugin<Project>
-{
-  public void apply(final Project project){
-    ShellSpiderExtension sse=project.getExtensions().create("shspider",ShellSpiderExtension.class,project);
+{ 
+  static final String EXTENSION_NAME="shspider";
 
+  public void apply(Project project){ 
+    ShellSpiderExtension extension=createExtension(project);
+    configureMainTasks(project,extension);
+  }
+
+  private void configureMainTasks(Project project,ShellSpiderExtension extension){
     TaskContainer taskContainer=project.getTasks();
-    EnvironmentCheckTask ektask=taskContainer.create("environmentCheck",EnvironmentCheckTask.class,project);
+    EnvironmentCheckTask ektask=taskContainer.create("environmentCheck",EnvironmentCheckTask.class,project,extension);
     BornTask bntask=taskContainer.create("born",BornTask.class,project);
     GrowTask gwtask=taskContainer.create("grow",GrowTask.class,project);
     AdultTask attask=taskContainer.create("adult",AdultTask.class,project);                
@@ -24,5 +29,10 @@ public class ShellSpiderPlugin implements Plugin<Project>
     gwtask.dependsOn(bntask);
     bntask.dependsOn(ektask);
   }
+
+  private ShellSpiderExtension createExtension(Project project){
+     return project.getExtensions().create(EXTENSION_NAME,ShellSpiderExtension.class,project);
+  }
+
 }
 

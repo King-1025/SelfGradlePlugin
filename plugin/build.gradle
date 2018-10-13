@@ -3,6 +3,10 @@ plugins {
     id 'com.gradle.plugin-publish' version '0.10.0' 
 }
 
+dependencies {
+//   compile 'com.google.guava:guava:26.0-jre'  
+}
+
 jar {
   baseName rootProject.ext.spiderPluginName
   version rootProject.ext.spiderPluginVersion

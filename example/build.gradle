@@ -12,9 +12,26 @@ buildscript{
 
 apply plugin:"king.shspider"
 
-environmentCheck.message "environmentCheck is called."
-
 shspider {
-  spiderName="Hi"
-  println spiderName
+
+  nest {
+       name="xxx"
+  }
+
+  spiders {
+      spider {
+       //  master=["91video","doubiSSR"]
+      }
+  }
+
+  web {
+     91video {
+        config="91video.yaml"
+     }
+     doubiSSR {
+        config="doubi.yaml"
+     }
+   }
 }
+
+println "spider count:"+shspider.spiders.size()

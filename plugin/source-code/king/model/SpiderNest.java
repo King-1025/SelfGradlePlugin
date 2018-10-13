@@ -5,10 +5,13 @@ public class SpiderNest{
   private String level;
   private String location;
   private String growthArea;
-  
-  private final static String DEFAULT_LOCATION="nest";
-  private final static String DEFAULT_GROWTH_AREA="growth";
+
+  static final String DEFAULT_LEVEL="0"; 
+  static final String DEFAULT_LOCATION="nest";
+  static final String DEFAULT_GROWTH_AREA="growth";
+ 
   public SpiderNest(){
+     level=DEFAULT_LEVEL;
      location=DEFAULT_LOCATION;
      growthArea=DEFAULT_GROWTH_AREA;
   }
