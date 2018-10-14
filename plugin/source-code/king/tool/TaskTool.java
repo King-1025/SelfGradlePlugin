@@ -2,10 +2,84 @@ package king.tool;
 
 import org.gradle.api.Project;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import king.tool.Log;
+
 public class TaskTool{
 
    private TaskTool(){ 
    
+   }
+
+   public static String getResourceString(Project project,String file) throws URISyntaxException{
+      ClassLoader cl=Thread.currentThread().getContextClassLoader();
+      URI uri=cl.getResource(file).toURI();
+      return getString(project,uri);
+   }
+
+   public static String getString(Project project,URI uri){
+      return project.getResources().getText().fromUri(uri).asString();
+  }
+
+   public static boolean write(File file,String content,boolean isAppend){
+    try{
+       FileWriter fw = new FileWriter(file, true);
+       BufferedWriter bw = new BufferedWriter(fw);
+       if(isAppend) bw.append(content);
+       else bw.write(content);
+       bw.close();
+       fw.close();
+       return true;
+   }catch(IOException e){
+       Log.e("TaskTool.write()",e.toString());
+       return false;
+   }
+ }
+  
+   public static boolean isFile(Project project,String path){
+        File f=project.file(path);
+        if(f.exists()&&f.isFile()){
+            return true;
+        }
+        return false;
+   }
+
+   public static boolean isValidPath(String path){
+      if(!isNull(path)){
+        String str=path.trim();
+        if(str.contains("*")||
+            str.contains("\\")||str.contains("/")){
+            return false;
+        }
+        char[] inch={'-',',','!','\'','\"','&','?',':','^'};
+        for(int i=0;i<inch.length;i++){
+            if(inch[i]==str.charAt(0))return false;
+        }
+        return true;
+      }
+      return false;
+   }
+
+   public static boolean maybeCreateDir(Project project,String path){
+       if(project!=null&&!isNull(path)){
+           File f=project.file(path);
+           if(f!=null){
+             if(!f.exists()){
+               f.mkdirs();
+               return true;
+             }else{
+               if(f.isDirectory())return true;
+               else return false;
+             }
+           }  
+       }
+       return false;
    }
 
    public static boolean isNull(String value){

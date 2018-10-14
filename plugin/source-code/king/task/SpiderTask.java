@@ -3,13 +3,21 @@ package king.task;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 
+import king.extension.ShellSpiderExtension;
+
 public class SpiderTask extends DefaultTask{
   public final static String GROUP_SHELL_SPIDER="Shell Spider";
   protected Project project;
-  
+  protected ShellSpiderExtension extension;  
+
   public SpiderTask(Project project,String description){
+      this(project,null,description);
+  }
+
+  public SpiderTask(Project project,ShellSpiderExtension extension,String description){
       super();
       this.project=project;
+      this.extension=extension;
       this.setGroup(GROUP_SHELL_SPIDER);
       this.setDescription(description);
   }

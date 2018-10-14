@@ -9,6 +9,7 @@ import king.task.EnvironmentCheckTask;
 import king.task.BornTask;
 import king.task.GrowTask;
 import king.task.AdultTask;
+import king.task.CleanTask;
 
 public class ShellSpiderPlugin implements Plugin<Project>
 { 
@@ -22,9 +23,10 @@ public class ShellSpiderPlugin implements Plugin<Project>
   private void configureMainTasks(Project project,ShellSpiderExtension extension){
     TaskContainer taskContainer=project.getTasks();
     EnvironmentCheckTask ektask=taskContainer.create("environmentCheck",EnvironmentCheckTask.class,project,extension);
-    BornTask bntask=taskContainer.create("born",BornTask.class,project);
+    BornTask bntask=taskContainer.create("born",BornTask.class,project,extension);
     GrowTask gwtask=taskContainer.create("grow",GrowTask.class,project);
     AdultTask attask=taskContainer.create("adult",AdultTask.class,project);                
+    CleanTask cntask=taskContainer.create("clean",CleanTask.class,project,extension);
     attask.dependsOn(gwtask);
     gwtask.dependsOn(bntask);
     bntask.dependsOn(ektask);

@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import groovy.lang.Closure;
 
 public class Space implements Named,Serializable{
-  private String name;
+  private final String name;
   private String config;
   private List<Dimension> structure;
   private int number;

@@ -8,20 +8,23 @@ import org.gradle.api.Incubating;
 import king.model.SpiderDescriptor;
 import king.model.SpiderFeature;
 import king.model.ExtensionModel;
+import king.model.Space;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;
+import java.util.Map;
 
 import groovy.lang.Closure;
 
 public class Spider extends ExtensionModel implements Named,Serializable {
-  private String id;
   private final String name;
+  private String id;
+  private String[] master;
+  private boolean forHuman=true;
   private SpiderDescriptor description=new SpiderDescriptor();
   private SpiderFeature feature=new SpiderFeature();
-
-  private String[] master;
- 
+  private Map<String,Space> predationArea;
+  
   public Spider(String name){
      this.name=name;
   }
@@ -36,6 +39,14 @@ public class Spider extends ExtensionModel implements Named,Serializable {
   
   public void setId(String id){
       this.id=id;
+  }
+  
+  public boolean getForHuman(){
+      return forHuman;
+  }
+  
+  public void setForHuman(boolean forHuman){
+      this.forHuman=forHuman;
   }
   
   @Nullable
@@ -65,6 +76,14 @@ public class Spider extends ExtensionModel implements Named,Serializable {
        this.master=master;
   }
 
+  public Map<String,Space> getPredationArea(){
+       return predationArea;
+  }
+  
+  public void setPredationArea(Map<String,Space> predationArea){
+       this.predationArea=predationArea;
+  }
+ 
   public boolean equals(Object object){
       if(object instanceof Spider){
          Spider other=(Spider)object;

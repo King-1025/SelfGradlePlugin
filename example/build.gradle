@@ -15,12 +15,19 @@ apply plugin:"king.shspider"
 shspider {
 
   nest {
-       name="vgjnhh"
+       location="spider-nest"
+       growthArea="src"
   }
 
   spiders {
       spider {
          master=["_91video","doubiSSR"]
+         description {
+             author="King-1025"
+             email="1543641386@qq.com"
+             intent="抓取91视频"
+             weburl="http://github.com/King-1025"
+         }
       }
   }
 
@@ -32,6 +39,7 @@ shspider {
         config="doubi.yaml"
      }
    }
+
 }
 
 println "spider count:"+shspider.spiders.size()
