@@ -18,14 +18,15 @@ import king.model.Space;
 import king.exception.SpaceException;
 import king.exception.SpiderException;
 import king.model.Spider;
+import king.model.R;
 
 public class EnvironmentCheckTask extends SpiderTask{
-  private final static String DEFAULT_DESCRIPTION="环境检查";
+
   private Map<String,Space> spaceMap;
 
   @Inject 
   public EnvironmentCheckTask(Project project,ShellSpiderExtension extension){
-      this(project,extension,DEFAULT_DESCRIPTION);
+      this(project,extension,R.def.TASK_ENVIRONMENT_CHECK_DESCRIPTION);
   }
   
   public EnvironmentCheckTask(Project project,ShellSpiderExtension extension,String description){
@@ -59,7 +60,7 @@ public class EnvironmentCheckTask extends SpiderTask{
       for(Space space : extension.getWeb()){
           String config=space.getConfig();
           if(TaskTool.isValidPath(config)){
-             config=config.trim().replace("-",File.separator);
+             config=config.trim().replace(R.def.CONFIG_PATH_SEPARATOR,File.separator);
              config=extension.getNest().getGrowthArea()+File.separator+config;
              if(TaskTool.isFile(project,config)){
                 space.setConfig(config);
@@ -80,7 +81,7 @@ public class EnvironmentCheckTask extends SpiderTask{
     String name=extension.getNest().getName();
     String location=extension.getNest().getLocation();
     if(name!=null){
-       if(TaskTool.isLengthValid(name,1,255)){
+       if(TaskTool.isLengthValid(name,R.def.MIN_NAME_LENGTH,R.def.MAX_NAME_LENGTH)){
          location=location+File.separator+name;     
        }else{
          throw SpiderNestException.invalidNestName();

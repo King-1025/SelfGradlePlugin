@@ -6,42 +6,100 @@ import org.gradle.api.tasks.TaskAction;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.io.Writer;
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 import king.extension.ShellSpiderExtension;
 import king.model.Spider;
 import king.exception.BornException;
 import king.tool.TaskTool;
+import king.model.SpiderDescriptor;
+import king.tool.Log;
+import king.model.SpiderFeature;
+import king.model.R;
 
 public class BornTask extends SpiderTask{
-  private final static String DEFAULT_DESCRIPTION="孵化蜘蛛";
-  static final String tempDir=".tmp";
+
+  private String tempDir=R.def.TASK_BORN_TEMP_DIR;
+  private boolean writerStatus;
 
   @Inject
   public BornTask(Project project,ShellSpiderExtension extension){
-      this(project,extension,DEFAULT_DESCRIPTION);
+      this(project,extension,R.def.TASK_BORN_DESCRIPTION);
   }
 
   public BornTask(Project project,ShellSpiderExtension extension,String description){
       super(project,extension,description);
   }
- 
-  private boolean write(File file,Spider spider)throws URISyntaxException{ 
-    String content=TaskTool.getResourceString(project,"head"); 
-    content+="#Author:"+spider.getDescription().getAuthor()+"\n";
-    content+="#Email:"+spider.getDescription().getEmail()+"\n";
-    content+="#Intent:"+spider.getDescription().getIntent()+"\n";
-    content+="#Site:"+spider.getDescription().getWeburl()+"\n";
-    return TaskTool.write(file,content,false);
+  
+  private boolean writeHead(Writer writer,SpiderDescriptor descriptor){
+   Log.q("writeHead()","I am called.");
+   if(descriptor!=null&&writerStatus){
+     String content=R.tag.SCRIPT_HEAD+
+     TaskTool.checkValue("\n"+R.tag.INTENT,descriptor.getIntent())+
+     TaskTool.checkValue("\n"+R.tag.AUTHOR,descriptor.getAuthor())+
+     TaskTool.checkValue("\n"+R.tag.EMAIL,descriptor.getEmail())+
+     TaskTool.checkValue("\n"+R.tag.DATE,descriptor.getDate())+
+     TaskTool.checkValue("\n"+R.tag.SITE,descriptor.getWeburl());
+     return TaskTool.write(writer,content,false,!writerStatus);
+   }else{
+     return false;
+   }
+ }
+
+  private boolean writeParma(Writer writer,SpiderFeature feature){
+       if(writerStatus){
+         Log.q("writeParma()","I am called.");
+         String content=TaskTool.N(1,5)+
+         R.command.SET_ROOT+"\n"+
+         R.command.SET_REQUIREMENT+"\n"+
+         R.command.SET_CURL_OPTION+"\n"+
+         R.command.SET_SAVE_TYPE+"\n"+
+         R.command.SET_SAVE_FILE+"\n"+
+         R.command.SET_SELF_UA;
+         return TaskTool.write(writer,content,true,!writerStatus);
+       }else{
+         return false;
+       }
+  }
+
+  private boolean writeFunc(Writer writer){
+      if(writerStatus){
+         Log.q("writeFunc()","I am called.");
+         String content="\nThere is func.";
+         return TaskTool.write(writer,content,true,!writerStatus);
+      }else{
+         return false;
+      }
+  }
+  
+  private boolean writeOther(Writer writer){
+       if(writerStatus){
+         Log.q("writeOther()","I am called.");
+         String content="\nThere is other.";
+         writerStatus=false;
+         return TaskTool.write(writer,content,true,!writerStatus);
+       }else{
+         return false;
+       }
+  }
+
+  private boolean write(File file,Spider spider){
+       Log.q("write()","spider:"+spider.getName());
+       Writer writer=TaskTool.getWriter(file);
+       writerStatus=true;
+       return writeHead(writer,spider.getDescription())
+            && writeParma(writer,spider.getFeature())
+            && writeFunc(writer)
+            && writeOther(writer);
   }
 
   @TaskAction
-  public void born() throws IOException,URISyntaxException{
+  public void born() throws IOException {
       String path=extension.getNest().getLocation()+File.separator+tempDir;
       if(TaskTool.maybeCreateDir(project,path)){
          for(Spider spider:extension.getSpiders()){
-            File tmp=project.file(path+File.separator+"_"+spider.getName().trim().toLowerCase()+"_born");
+            File tmp=project.file(path+File.separator+R.def.BORN_FILE_PREFIX+spider.getName().trim().toLowerCase()+R.def.BORN_FILE_SUBFIX);
             if(tmp.exists()){
               //if(!tmp.delete())throw BornException.faildDeleteTempFile(path);
                continue;

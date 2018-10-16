@@ -1,6 +1,6 @@
 package king.model;
 
-//import com.google.common.base.Objects;
+import com.google.common.base.Objects;
 import org.gradle.api.Named;
 
 import king.model.Dimension;
@@ -70,16 +70,14 @@ public class Space implements Named,Serializable{
   public boolean equals(Object object){
       if(object instanceof Space){
          Space other=(Space)object;
-         return true;
-  //       return Objects.equal(name,other.name)
-    //         && Objects.equal(config,other.config);
+         return Objects.equal(name,other.name)
+             && Objects.equal(config,other.config);
       }
       return false;
   }
 
-  public int hashCode(){
-      return 0;   
-   //   return Objects.hashCode(name,config);
+  public int hashCode(){ 
+      return Objects.hashCode(name,config);
   }
      
 }

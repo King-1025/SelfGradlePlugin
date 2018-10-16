@@ -4,9 +4,9 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 
 import king.extension.ShellSpiderExtension;
+import king.model.R;
 
 public class SpiderTask extends DefaultTask{
-  public final static String GROUP_SHELL_SPIDER="Shell Spider";
   protected Project project;
   protected ShellSpiderExtension extension;  
 
@@ -18,7 +18,7 @@ public class SpiderTask extends DefaultTask{
       super();
       this.project=project;
       this.extension=extension;
-      this.setGroup(GROUP_SHELL_SPIDER);
+      this.setGroup(R.def.GROUP_SHELL_SPIDER);
       this.setDescription(description);
   }
 

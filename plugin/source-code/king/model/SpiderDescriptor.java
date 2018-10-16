@@ -5,6 +5,7 @@ public class SpiderDescriptor{
    private String author;
    private String email;
    private String weburl;
+   private String date;
    
    public SpiderDescriptor(){
 
@@ -41,5 +42,12 @@ public class SpiderDescriptor{
    public void setWeburl(String weburl){
       this.weburl=weburl;
    }
+   
+   public String getDate(){
+      return date;
+   }
 
+   public void setDate(String date){
+      this.date=date;
+   }
 }

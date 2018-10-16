@@ -4,7 +4,8 @@ plugins {
 }
 
 dependencies {
-//   compile 'com.google.guava:guava:26.0-jre'  
+     implementation 'com.google.guava:guava:26.0-jre'  
+     implementation "com.esotericsoftware.yamlbeans:yamlbeans:1.13"
 }
 
 jar {

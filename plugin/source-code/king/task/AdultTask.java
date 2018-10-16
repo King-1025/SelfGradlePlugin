@@ -5,12 +5,13 @@ import org.gradle.api.Project;
 
 import javax.inject.Inject;
 
+import king.model.R;
+
 public class AdultTask extends SpiderTask{
-  private final static String DEFAULT_DESCRIPTION="成年";
   
   @Inject
   public AdultTask(Project project){
-     this(project,DEFAULT_DESCRIPTION);
+     this(project,R.def.TASK_ADULT_DESCRIPTION);
   }
 
   public AdultTask(Project project,String description){

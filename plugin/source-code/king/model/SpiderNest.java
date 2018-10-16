@@ -1,17 +1,17 @@
 package king.model;
 
+import king.model.R;
+
 public class SpiderNest{
   private String name;
   private String level;
   private String location;
   private String growthArea;
-   
-  static final String DEFAULT_LOCATION="nest";
-  static final String DEFAULT_GROWTH_AREA="growth";
  
   public SpiderNest(){
-     location=DEFAULT_LOCATION;
-     growthArea=DEFAULT_GROWTH_AREA;
+     level=R.def.NEST_LEVEL;
+     location=R.def.NEST_LOCATION;
+     growthArea=R.def.NEST_GROWTH_AREA;
   }
   
   public String getName(){

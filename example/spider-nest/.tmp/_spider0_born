@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#描述:抓取91视频
+#作者:King-1025
+#邮箱:1543641386@qq.com
+#日期:2018.10.15
+#网址:http://github.com/King-1025
+
+
+
+
+ROOT=.
+REQUIREMENT="curl sed ua awk"
+CURL_OPTION="-#"
+SAVE_TYPE=".html"
+SAVE_FILE=./output.html
+SELF_UA=0
+There is func.
+There is other.

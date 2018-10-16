@@ -7,13 +7,13 @@ import org.gradle.api.tasks.TaskAction;
 import javax.inject.Inject;
 
 import king.extension.ShellSpiderExtension;
+import king.model.R;
 
 public class CleanTask extends SpiderTask{
-  private final static String DEFAULT_DESCRIPTION="清理";
   
   @Inject
   public CleanTask(Project project,ShellSpiderExtension extension){
-    this(project,extension,DEFAULT_DESCRIPTION);
+    this(project,extension,R.def.TASK_CLEAN_DESCRIPTION);
   }
 
   public CleanTask(Project project,ShellSpiderExtension extension,String description){

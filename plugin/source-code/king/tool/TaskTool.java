@@ -3,8 +3,9 @@ package king.tool;
 import org.gradle.api.Project;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.Writer;
 import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -17,6 +18,28 @@ public class TaskTool{
    
    }
 
+   public static String N(int n,int s){
+      int len=n;
+      int step=1;
+      String chr="\n";
+      switch(s){
+         case 2:step=2;chr="\n\n";break;
+         case 5:step=5;chr="\n\n\n\n\n";break;
+         case 10:step=10;chr="\n\n\n\n\n\n\n\n\n\n";break;
+         case 20:step=20;chr="\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";break;
+      }
+      String all="";
+      for(int i=0;i<len;i+=step)all+=chr;
+      return all;
+   }
+   
+   public static String checkValue(String tag,String value){
+        if(!isNull(tag)&&value!=null){
+            return tag+value;
+        }else{
+            return "";
+        }
+   }
    public static String getResourceString(Project project,String file) throws URISyntaxException{
       ClassLoader cl=Thread.currentThread().getContextClassLoader();
       URI uri=cl.getResource(file).toURI();
@@ -27,20 +50,31 @@ public class TaskTool{
       return project.getResources().getText().fromUri(uri).asString();
   }
 
-   public static boolean write(File file,String content,boolean isAppend){
-    try{
-       FileWriter fw = new FileWriter(file, true);
-       BufferedWriter bw = new BufferedWriter(fw);
-       if(isAppend) bw.append(content);
-       else bw.write(content);
-       bw.close();
-       fw.close();
-       return true;
-   }catch(IOException e){
-       Log.e("TaskTool.write()",e.toString());
+   public static BufferedWriter getWriter(File file){
+     try{
+      return new BufferedWriter(new FileWriter(file, true));
+     }catch(IOException e){
+         Log.e("TaskTool.getWriter()",e.toString());
+     }
+     return null;
+   }
+
+   public static boolean write(Writer writer,String content,boolean isAppend,boolean isClosed){
+       if(writer!=null&&!isNull(content)){
+         try{
+           if(isAppend) writer.append(content);                        else writer.write(content);
+           if(isClosed) writer.close();
+           return true;
+         }catch(IOException e){
+           Log.e("TaskTool.write()",e.toString());
+         }
+       }
        return false;
    }
- }
+
+   public static boolean write(File file,String content,boolean isAppend) {  
+      return write(getWriter(file),content,isAppend,true);
+   }
   
    public static boolean isFile(Project project,String path){
         File f=project.file(path);

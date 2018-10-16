@@ -4,9 +4,12 @@ description = "脚本蜘蛛示例工程"
 buildscript{
     repositories {
        flatDir dirs:"$rootDir/repo-plugin"
+       mavenCentral()
     }
     dependencies {
        classpath name:rootProject.ext.spiderPluginName, version:rootProject.ext.spiderPluginVersion
+       classpath "com.esotericsoftware.yamlbeans:yamlbeans:1.13"
+       classpath 'com.google.guava:guava:26.0-jre'
     }
 }
 
@@ -20,12 +23,13 @@ shspider {
   }
 
   spiders {
-      spider {
+      spider0 {
          master=["_91video","doubiSSR"]
          description {
              author="King-1025"
              email="1543641386@qq.com"
              intent="抓取91视频"
+             date="2018.10.15"
              weburl="http://github.com/King-1025"
          }
       }
