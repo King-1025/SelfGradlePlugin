@@ -35,24 +35,32 @@ public class TaskTool{
    
    public static String checkValue(String tag,String value){
         if(!isNull(tag)&&value!=null){
+            Log.d("checkValue()","tag:"+tag+" value:"+value);
             return tag+value;
         }else{
+            Log.d("checkValue()","tag:"+tag+" is null.");
             return "";
         }
    }
-   public static String getResourceString(Project project,String file) throws URISyntaxException{
-      ClassLoader cl=Thread.currentThread().getContextClassLoader();
-      URI uri=cl.getResource(file).toURI();
-      return getString(project,uri);
-   }
+   public static String getResourceString(Project project,String file){
+     try{
+        ClassLoader cl=Thread.currentThread().getContextClassLoader();
+        URI uri=cl.getResource(file).toURI();
+        return getString(project,uri);
+     }catch(URISyntaxException e){
+        Log.e("TaskTool.getResourceString()",e.toString());
+        return null;
+    }
+  }
 
    public static String getString(Project project,URI uri){
       return project.getResources().getText().fromUri(uri).asString();
   }
 
-   public static BufferedWriter getWriter(File file){
+   public static Writer getWriter(File file){
      try{
-      return new BufferedWriter(new FileWriter(file, true));
+      // return new FileWriter(file, true);
+       return new BufferedWriter(new FileWriter(file, true));
      }catch(IOException e){
          Log.e("TaskTool.getWriter()",e.toString());
      }
@@ -64,6 +72,7 @@ public class TaskTool{
          try{
            if(isAppend) writer.append(content);                        else writer.write(content);
            if(isClosed) writer.close();
+           Log.d("write()","write ok!");
            return true;
          }catch(IOException e){
            Log.e("TaskTool.write()",e.toString());

@@ -30,7 +30,11 @@ shspider {
              email="1543641386@qq.com"
              intent="抓取91视频"
              date="2018.10.15"
+             version="0.1.0"
              weburl="http://github.com/King-1025"
+         }
+         feature {
+             enableLogStyle=true
          }
       }
   }

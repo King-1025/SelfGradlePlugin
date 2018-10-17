@@ -6,11 +6,20 @@ public class SpiderDescriptor{
    private String email;
    private String weburl;
    private String date;
+   private String version;
    
    public SpiderDescriptor(){
 
    } 
    
+   public String getVersion(){
+      return version;
+   }
+
+   public void setVersion(String version){
+      this.version=version;
+   }   
+
    public String getIntent(){
       return intent;
    }
