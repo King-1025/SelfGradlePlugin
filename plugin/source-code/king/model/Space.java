@@ -5,7 +5,6 @@ import org.gradle.api.Named;
 
 import king.model.Dimension;
 
-import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
@@ -15,9 +14,14 @@ import groovy.lang.Closure;
 public class Space implements Named,Serializable{
   private final String name;
   private String config;
-  private List<Dimension> structure;
+  private List structure;
   private int number;
   private String site;
+  private String type;
+  private List saveTags;
+
+  public static final String TYPE_SINGLE="SINGLE";
+  public static final String TYPE_RANGE="RANGE";
 
   public Space(String name){
      this.name=name;
@@ -35,15 +39,22 @@ public class Space implements Named,Serializable{
   public void setConfig(String config){
      this.config=config;
   }
-  
-  @Nullable
-  public List<Dimension> getStructure(){
+ 
+  public List getStructure(){
      return structure;
   }
 
-  public void setStructure(List<Dimension> structure){
+  public void setStructure(List structure){
      this.structure=structure;
      updateNumber();
+  }
+
+  public List getSaveTags(){
+     return saveTags;
+  }
+
+  public void setSaveTags(List saveTags){
+     this.saveTags=saveTags;
   }
 
   public int getNumber(){
@@ -58,13 +69,20 @@ public class Space implements Named,Serializable{
     }
   }
 
-  @Nullable 
   public String getSite(){
      return site;
   }
   
   public void setSite(String site){
      this.site=site;
+  }
+
+  public String getType(){
+     return type;
+  }
+
+  public void setType(String type){
+     this.type=type;
   }
 
   public boolean equals(Object object){

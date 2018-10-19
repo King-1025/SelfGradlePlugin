@@ -4,6 +4,12 @@ public final class R{
 
   public static final class def {
 
+     public static final String SPACE_SITE="site";
+     public static final String SPACE_TYPE="type";
+     public static final String SPACE_STRUCTURE="structure";
+     public static final String SPACE_SAVETAGS="save";
+    
+     public static final String RULE_YAML_TAG="R";
      public static final String DIMENSION_YAML_TAG="X";
 
      public static final String TAB="\t";

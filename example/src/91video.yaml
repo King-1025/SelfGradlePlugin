@@ -1,9 +1,24 @@
-_91video:
+site: http://91porn.com/v.php?next=watch&page=
+type: RANGE
+_91porn:
   - !X
-    name: space-0
+    name: page 
+    action: "sed -n \"/viewkey.*title/p\" $1 | sed 's/\(.*\)=\"\(.*\)\" \(.*\)/\2/g'"
   - !X
-    name: space-1
+    name: list
+    action: "sed ..."
   - !X
-    name: space-2
-  - !X
-    name: space-3
+    name: view
+    save:
+      - !R
+        tag: title
+        type: TEXT
+        action: "sed ..."
+      - !R
+        tag: poster
+        type: URL
+        action: "sed ..."
+      - !R
+        tag: video
+        type: URL
+        action: "sed ..."
