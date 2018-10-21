@@ -1,28 +1,26 @@
 package king.task;
 
-import com.esotericsoftware.yamlbeans.YamlException; 
 import org.gradle.api.Task;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;
 
 import javax.inject.Inject;
+import java.io.File;
+import java.io.Writer;
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.io.FileNotFoundException;
 
 import king.model.R;
 import king.tool.YamlTool;
+import king.tool.TaskTool;
 import king.extension.ShellSpiderExtension;
 import king.model.Space;
 import king.model.Spider;
-import king.tool.Log;
-import king.model.Dimension;
 import king.exception.GrowException;
-import king.tool.TaskTool;
-import king.model.Rule;
+import king.model.Parser;
 
 public class GrowTask extends SpiderTask{
+
+  private Parser parser;
   
   @Inject
   public GrowTask(Project project,ShellSpiderExtension extension){
@@ -32,60 +30,61 @@ public class GrowTask extends SpiderTask{
   public GrowTask(Project project,ShellSpiderExtension extension,String description){
     super(project,extension,description);
   }
-
-  private Map<String,Class<?>> getClassTags(){
-      Map<String,Class<?>>tags=new HashMap<>();
-      tags.put(R.def.DIMENSION_YAML_TAG,Dimension.class);
-      tags.put(R.def.RULE_YAML_TAG,Rule.class);
-      return tags;
-  }
   
-  
-  private String genCrawlFunction(Space space){
-       Log.q("genCrawlFunction()","site:"+space.getSite());
-       Log.q("genCrawlFunction()","type:"+space.getType());
-       return null;    
+  public void setParser(Parser parser){
+      this.parser=parser;
   }
 
-  private void parseSpace(){
-     for(Spider spider:extension.getSpiders()){
-         for(Space space:spider.getPredationArea().values()){
-          String config=project.file(space.getConfig()).getPath();
-          try{
-             Map data=(Map) YamlTool.read(config,getClassTags());
-             if(data!=null){
-               String site=(String)data.get(R.def.SPACE_SITE);
-               String type=(String)data.get(R.def.SPACE_TYPE);
-               List structure=(List)data.get(R.def.SPACE_STRUCTURE);
-               List saveTags=(List)data.get(R.def.SPACE_SAVETAGS);
+  public Parser getParser(){
+      return parser;
+  }
 
-               if(!TaskTool.isNull(site)){
-                 space.setSite(site);
-                 if(!TaskTool.isNull(type)){
-                    if(type.equals(Space.TYPE_SINGLE)||type.equals(Space.TYPE_RANGE)){
-                      space.setType(type);
-                      space.setStructure(structure);
-                      space.setSaveTags(saveTags);
+  private File getTempFile(Spider spider){
+       File tmp=project.file(spider.getTempDir()+File.separator+R.def.GROW_FILE_PREFIX+spider.getName().trim().toLowerCase()+R.def.GROW_FILE_SUBFIX);
+       if(project.file(spider.getTempFilePath()).renameTo(tmp)){
+          spider.setTempFilePath(tmp.getPath());
+          return tmp;
+      }else{
+          return null;
+      }
+  }
 
-           String content=genCrawlFunction(space);
-                      continue;
-                    }
-                  }
-               }
-             }
-//             throw GrowException.faildParseSpace(space.getName());
-         Log.q("parseSpace()","Faild parse space:"+space.getName());
-          }catch(FileNotFoundException e){
-             Log.q("test()",e.toString());
-          }catch(YamlException e){
-             Log.q("test()",e.toString());                            }
- Log.q("test()","name:"+space.getName()+ " config:" +config);
-       }
+  private boolean write(Writer writer,Space space){
+     if(parser!=null){
+        String content=TaskTool.N(1,2)+parser.genCrawlFunction(space);
+        return TaskTool.write(writer,content,true,false);
      }
+     return false;
   }
   
   @TaskAction
   public void grow(){
-      parseSpace();
+     for(Spider spider:extension.getSpiders()){
+      if(spider.getTempFilePath()!=null){        
+         File tmp=getTempFile(spider);
+         if(tmp==null){
+            throw GrowException.faildCreateTempFile(spider.getName());
+         }
+         Writer writer=TaskTool.getWriter(tmp); 
+         for(Space space:spider.getPredationArea().values()){
+           if(YamlTool.configure(space)){
+             if(!write(writer,space)) throw GrowException.faildWriteTempFile(spider.getName());
+           }else{
+             throw GrowException.faildConfigureSpace(space.getName());
+           }
+         }
+         String content=TaskTool.N(1,2)+"function crawl()\n{";
+         if(parser!=null){
+            List<String> listFun=parser.listFunctionName();
+            if(listFun!=null){
+               for(String fun:listFun){
+                  content+="\n  "+fun;
+               }
+             }
+         }
+         content+="\n}";
+         TaskTool.write(writer,content,true,true);  
+      }
+    }
   }
 }

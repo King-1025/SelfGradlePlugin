@@ -1,12 +1,12 @@
 site: http://91porn.com/v.php?next=watch&page=
 type: RANGE
-_91porn:
+_91video:
   - !X
     name: page 
-    action: "sed -n \"/viewkey.*title/p\" $1 | sed 's/\(.*\)=\"\(.*\)\" \(.*\)/\2/g'"
+    rule: "sed ..." 
   - !X
     name: list
-    action: "sed ..."
+    rule: "sed ..."
   - !X
     name: view
     save:

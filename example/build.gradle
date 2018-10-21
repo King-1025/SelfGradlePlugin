@@ -18,6 +18,7 @@ apply plugin:"king.shspider"
 shspider {
 
   nest {
+       name="king"
        location="spider-nest"
        growthArea="src"
   }
@@ -36,6 +37,10 @@ shspider {
          feature {
              enableLogStyle=true
          }
+      }
+      spider1 {
+          id="test"
+          master=["doubiSSR"]
       }
   }
 

@@ -1,10 +1,4 @@
 #!/usr/bin/env bash
-#描述:抓取91视频
-#作者:King-1025
-#邮箱:1543641386@qq.com
-#版本:0.1.0
-#日期:2018.10.15
-#网址:http://github.com/King-1025
 
 
 ROOT=.
@@ -17,16 +11,7 @@ PROCESS=1
 RANGE="0:2"
 LOG_FILE="--"
 LOG_LEVEL=1
-LOG_STYLE="middle"
-VERSION="0.1.0"
-INTENT="抓取91视频"
 
-
-function crawl()
-{
-  log i "crawl() is called."
-#  sleep 10 
-}
 
 function app()
 {
@@ -382,5 +367,19 @@ function gen_ua()
       echo $(ua)
   fi
 }
+ 
+
+function doubiSSR()
+{
+  echo space:doubiSSR
+  echo site:http://91porn.com/v.php?next=watch&page=
+  echo type:RANGE
+}
+
+function crawl()
+{
+  doubiSSR
+}
+
 
 app "$#" "$*"

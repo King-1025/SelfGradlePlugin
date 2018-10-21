@@ -12,6 +12,7 @@ import king.task.GrowTask;
 import king.task.AdultTask;
 import king.task.CleanTask;
 import king.model.R;
+import king.model.SpaceHandler;
 
 public class ShellSpiderPlugin implements Plugin<Project>
 { 
@@ -26,11 +27,13 @@ public class ShellSpiderPlugin implements Plugin<Project>
     EnvironmentCheckTask ektask=taskContainer.create(R.def.TASK_ENVIRONMENT_CHECK,EnvironmentCheckTask.class,project,extension);
     BornTask bntask=taskContainer.create(R.def.TASK_BORN,BornTask.class,project,extension);
     GrowTask gwtask=taskContainer.create(R.def.TASK_GROW,GrowTask.class,project,extension);
-    AdultTask attask=taskContainer.create(R.def.TASK_ADULT,AdultTask.class,project);                
+    AdultTask attask=taskContainer.create(R.def.TASK_ADULT,AdultTask.class,project,extension);                
     CleanTask cntask=taskContainer.create(R.def.TASK_CLEAN,CleanTask.class,project,extension);
     attask.dependsOn(gwtask);
     gwtask.dependsOn(bntask);
     bntask.dependsOn(ektask);
+
+    gwtask.setParser(SpaceHandler.getInstance());
   }
 
   private ShellSpiderExtension createExtension(Project project){

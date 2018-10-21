@@ -1,9 +1,24 @@
+site: http://91porn.com/v.php?next=watch&page=
+type: RANGE
 doubiSSR:
   - !X
-    name: space-0
+    name: page 
+    rule: "sed ..." 
   - !X
-    name: space-1
+    name: list
+    rule: "sed ..."
   - !X
-    name: space-2
-  - !X
-    name: space-3
+    name: view
+    save:
+      - !R
+        tag: title
+        type: TEXT
+        action: "sed ..."
+      - !R
+        tag: poster
+        type: URL
+        action: "sed ..."
+      - !R
+        tag: video
+        type: URL
+        action: "sed ..."

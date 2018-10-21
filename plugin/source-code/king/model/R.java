@@ -3,11 +3,11 @@ package king.model;
 public final class R{
 
   public static final class def {
+    
+     public static final String NAME_LINK_CHAR="-";
 
      public static final String SPACE_SITE="site";
      public static final String SPACE_TYPE="type";
-     public static final String SPACE_STRUCTURE="structure";
-     public static final String SPACE_SAVETAGS="save";
     
      public static final String RULE_YAML_TAG="R";
      public static final String DIMENSION_YAML_TAG="X";
@@ -15,6 +15,10 @@ public final class R{
      public static final String TAB="\t";
 
      public static final String EXTENSION_NAME="shspider";
+     public static final String SPIDER_FILE_SUBFIX=".sh";
+     public static final String GROW_FILE_PREFIX="_";
+     public static final String GROW_FILE_SUBFIX="_grow";
+
      public static final String TASK_BORN_TEMP_DIR=".tmp";
      public static final String BORN_FILE_PREFIX="_";
      public static final String BORN_FILE_SUBFIX="_born";
@@ -28,7 +32,7 @@ public final class R{
      public static final boolean FORHUMAN=true; 
      public static final String NEST_LOCATION="nest";
      public static final String NEST_GROWTH_AREA="growth";
-     public static final String NEST_LEVEL="0";
+     public static final String NEST_LEVEL="x";
          
      public static final String TASK_CLEAN="clean";
      public static final String TASK_ENVIRONMENT_CHECK="environmentCheck";

@@ -9,7 +9,7 @@ public class SpiderException extends BasedException{
   }
 
   public static SpiderException notFoundSpace(String name){
-       return new SpiderException("Not found space::"+name);
+       return new SpiderException("Not found space:"+name);
   }
 
   public static SpiderException withoutMaster(String name){

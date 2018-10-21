@@ -3,8 +3,6 @@ package king.model;
 import com.google.common.base.Objects;
 import org.gradle.api.Named;
 
-import king.model.Dimension;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
@@ -14,11 +12,10 @@ import groovy.lang.Closure;
 public class Space implements Named,Serializable{
   private final String name;
   private String config;
-  private List structure;
-  private int number;
   private String site;
   private String type;
-  private List saveTags;
+  private List structure;
+  private int number;
 
   public static final String TYPE_SINGLE="SINGLE";
   public static final String TYPE_RANGE="RANGE";
@@ -47,14 +44,6 @@ public class Space implements Named,Serializable{
   public void setStructure(List structure){
      this.structure=structure;
      updateNumber();
-  }
-
-  public List getSaveTags(){
-     return saveTags;
-  }
-
-  public void setSaveTags(List saveTags){
-     this.saveTags=saveTags;
   }
 
   public int getNumber(){

@@ -18,6 +18,17 @@ public class TaskTool{
    
    }
 
+   public static boolean copy(Project project,String src,String dst){
+        if(project!=null&&src!=null&&dst!=null){
+           return project.copy(it -> {
+               it.from(src);
+               it.into(project.file(dst).getParent());
+               it.rename(project.file(src).getName(),project.file(dst).getName());
+           }).getDidWork();
+        }
+        return false;
+   }
+
    public static String N(int n,int s){
       int len=n;
       int step=1;

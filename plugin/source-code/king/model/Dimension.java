@@ -1,13 +1,13 @@
 package king.model;
 
-import java.util.List;
+import com.google.common.base.Objects;
 
-import king.model.Rule;
+import java.util.List;
 
 public class Dimension{
   private String name;
-  private List<Rule>rules;
-  private String follow;
+  private String rule;
+  private List save;
 
   public Dimension(){
 
@@ -21,19 +21,23 @@ public class Dimension{
      this.name=name;
   }
   
-  public String getFollow(){
-     return follow;
+  public String getRule(){
+     return rule;
   }
 
-  public void setFollow(String follow){
-     this.follow=follow;
+  public void setRule(String rule){
+     this.rule=rule;
   }
 
-  public List<Rule> getRules(){
-     return rules;
+  public List getSave(){
+     return save;
   }
 
-  public void setRules(List<Rule> rules){
-     this.rules=rules;
+  public void setSave(List save){
+     this.save=save;
+  }
+
+  public int hashCode(){
+      return Objects.hashCode(name,rule,save);
   }
 }

@@ -25,6 +25,9 @@ public class Spider extends ExtensionModel implements Named,Serializable {
   private SpiderDescriptor description=new SpiderDescriptor();
   private SpiderFeature feature=new SpiderFeature();
   private Map<String,Space> predationArea;
+
+  private String tempDir;
+  private String tempFilePath;
   
   public Spider(String name){
      this.name=name;
@@ -85,6 +88,22 @@ public class Spider extends ExtensionModel implements Named,Serializable {
        this.predationArea=predationArea;
   }
  
+  public String getTempDir(){
+       return tempDir;
+  }
+
+  public void setTempDir(String tempDir){
+       this.tempDir=tempDir;
+  }
+
+  public String getTempFilePath(){
+       return tempFilePath;
+  }
+
+  public void setTempFilePath(String tempFilePath){
+       this.tempFilePath=tempFilePath;
+  }
+
   public boolean equals(Object object){
       if(object instanceof Spider){
          Spider other=(Spider)object;

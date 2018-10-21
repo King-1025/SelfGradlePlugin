@@ -111,7 +111,7 @@ public class BornTask extends SpiderTask{
        if(writerStatus){
          Log.q("writeOther()","I am called.");
          String content=" ";
-         content=R.command.APP_START;
+         content=" ";
          writerStatus=false;
          return TaskTool.write(writer,content,true,!writerStatus);
        }else{
@@ -142,6 +142,8 @@ public class BornTask extends SpiderTask{
               Log.q("born()","tmp delete ok!");
             }
             if(tmp.createNewFile()){
+              spider.setTempDir(path);
+              spider.setTempFilePath(tmp.getPath());
               if(!write(tmp,spider))throw BornException.faildWriteTempFile(path);
             }else{
               throw BornException.faildCreateTempFile(path);
