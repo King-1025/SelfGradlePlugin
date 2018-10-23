@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+#描述:抓取91视频
+#作者:King-1025
+#邮箱:1543641386@qq.com
+#版本:0.1.0
+#日期:2018.10.15
+#网址:http://github.com/King-1025
 
 
 ROOT=.
@@ -7,10 +13,15 @@ CURL_OPTION="-#"
 SAVE_TYPE=".html"
 SAVE_FILE="./output.html"
 SELF_UA=0
+RANGE_START=0
+RANGE_END=2
 PROCESS=1
 RANGE="0:2"
 LOG_FILE="--"
 LOG_LEVEL=1
+LOG_STYLE="middle"
+VERSION="0.1.0"
+INTENT="抓取91视频"
 
 
 function app()
@@ -82,7 +93,7 @@ function may_set()
      case "$1" in
         "SAVE_FILE") SAVE_FILE="$2" ;;
         "PROCESS") PROCESS="$2" ;;
-        "RANGE") RANGE="$2" ;;
+        "RANGE") RANGE="$2"; handle_range ;;
         "SAVE_TYPE") SAVE_TYPE="$2" ;;
         "LOG_FILE") LOG_FILE="$2" ;;
         "LOG_LEVEL") LOG_LEVEL="$2" ;;
@@ -91,6 +102,30 @@ function may_set()
      esac    
   fi
  fi
+}
+
+function handle_range()
+{
+  local left=$(echo $RANGE|awk -F ":" '{print $1}')
+  local right=$(echo $RANGE|awk -F ":" '{print $2}')
+  is_number "$left"
+  if [ $? -eq 0 ] && [ "$left" != "" ]; then
+     RANGE_START=$left
+  fi
+  is_number "$right"
+  if [ $? -eq 0 ] && [ "$right" != "" ]; then
+     RANGE_END=$right
+  fi
+}
+
+function is_number()
+{
+  printf %d $1 > /dev/null 2>&1
+  if [ $? -eq 0 ]; then
+    return 0
+  else
+    return 1
+  fi
 }
 
 function show()
@@ -102,6 +137,8 @@ function show()
   log i "SAVE_FILE:$SAVE_FILE"
   log i "PROCESS:$PROCESS"
   log i "RANGE:$RANGE"
+  log i "RANGE_START:$RANGE_START"
+  log i "RANGE_END:$RANGE_END"
   log i "SAVE_TYPE:$SAVE_TYPE"
   log i "LOG_FILE:$LOG_FILE"
   log i "LOG_LEVEL:$LOG_LEVEL"
@@ -369,16 +406,53 @@ function gen_ua()
 }
  
 
-function doubiSSR()
+function _91video()
 {
-  echo space:doubiSSR
-  echo site:http://91porn.com/v.php?next=watch&page=
-  echo type:RANGE
+  log i "_91video start..."
+  export _91video_CRAWL_TOTAL=0
+  for((index=${RANGE_START};index<=${RANGE_END};index++));do
+   declare -a page=("http://91porn.com/v.php?next=watch&page=${index}")
+   for i0 in ${page}; do
+    read -u 6
+    {
+    data=".d$(rand 1 10)$(rand 11 20)$(rand 21 30)$(date +%H%M%s)"
+    log i "fetch ${i0}"
+    fetch "${data}" "${i0}" "${i0}"
+    if [ $? != 0 ]||[ ! -e ${data} ];then continue; fi
+    declare -a view=$(sed -n "/viewkey.*title/p" ${data} | sed 's/\(.*\)="\(.*\)" \(.*\)/\2/g')
+    rm ${data} > /dev/null 2>&1
+    for i1 in ${view}; do
+     read -u 6
+     {
+     data=".d$(rand 1 10)$(rand 11 20)$(rand 21 30)$(date +%H%M%s)"
+     log i "fetch ${i1}"
+     fetch "${data}" "${i1}" "${i1}"
+     if [ $? != 0 ]||[ ! -e ${data} ];then continue; fi
+     local title=$(sed -n "/<title>/p" ${data} | sed "s/\(.*\)>\(.*\)/\2/g" | sed s/[[:space:]]//g)
+     is_null "title" "${title}"
+     local poster=$(sed -n "/poster/p" ${data} | sed 's/\(.*\)="\(.*\)" \(.*\)/\2/g')
+     is_null "poster" "${poster}"
+     local video=$(sed -n "/source/p" ${data} | sed 's/\(.*\)="\(.*\)" \(.*\)/\2/g' | sed 's/185.38.13.130/192.240.120.34/' | sed 's/185.38.13.159/192.240.120.34/')
+     is_null "video" "${video}"
+     export _91video_CRAWL_TOTAL=$((${_91video_CRAWL_TOTAL}+1))
+     rm ${data} > /dev/null 2>&1
+     echo >&6
+     } &
+     done
+     wait
+    echo >&6
+    } &
+    done
+    wait
+  done
+  log i "_91video done!"
 }
 
 function crawl()
 {
-  doubiSSR
+  _91video
+  log i "_91video TOTAL:${_91video_CRAWL_TOTAL}"
+  log i "all crawl tasks finished!"
 }
 
 

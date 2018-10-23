@@ -67,7 +67,7 @@ function may_set()
      case "$1" in
         "SAVE_FILE") SAVE_FILE="$2" ;;
         "PROCESS") PROCESS="$2" ;;
-        "RANGE") RANGE="$2" ;;
+        "RANGE") RANGE="$2"; handle_range ;;
         "SAVE_TYPE") SAVE_TYPE="$2" ;;
         "LOG_FILE") LOG_FILE="$2" ;;
         "LOG_LEVEL") LOG_LEVEL="$2" ;;
@@ -76,6 +76,30 @@ function may_set()
      esac    
   fi
  fi
+}
+
+function handle_range()
+{
+  local left=$(echo $RANGE|awk -F ":" '{print $1}')
+  local right=$(echo $RANGE|awk -F ":" '{print $2}')
+  is_number "$left"
+  if [ $? -eq 0 ] && [ "$left" != "" ]; then
+     RANGE_START=$left
+  fi
+  is_number "$right"
+  if [ $? -eq 0 ] && [ "$right" != "" ]; then
+     RANGE_END=$right
+  fi
+}
+
+function is_number()
+{
+  printf %d $1 > /dev/null 2>&1
+  if [ $? -eq 0 ]; then
+    return 0
+  else
+    return 1
+  fi
 }
 
 function show()
@@ -87,6 +111,8 @@ function show()
   log i "SAVE_FILE:$SAVE_FILE"
   log i "PROCESS:$PROCESS"
   log i "RANGE:$RANGE"
+  log i "RANGE_START:$RANGE_START"
+  log i "RANGE_END:$RANGE_END"
   log i "SAVE_TYPE:$SAVE_TYPE"
   log i "LOG_FILE:$LOG_FILE"
   log i "LOG_LEVEL:$LOG_LEVEL"

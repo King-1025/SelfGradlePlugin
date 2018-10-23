@@ -24,8 +24,9 @@ shspider {
   }
 
   spiders {
-      spider0 {
-         master=["_91video","doubiSSR"]
+      spider {
+         id="91spider"
+         master=["_91video"]
          description {
              author="King-1025"
              email="1543641386@qq.com"
@@ -38,18 +39,11 @@ shspider {
              enableLogStyle=true
          }
       }
-      spider1 {
-          id="test"
-          master=["doubiSSR"]
-      }
   }
 
   web {
      _91video {
         config="91video.yaml"
-     }
-     doubiSSR {
-        config="doubi.yaml"
      }
    }
 

@@ -29,6 +29,21 @@ public class TaskTool{
         return false;
    }
 
+   public static String E(int n,int s){
+      int len=n;
+      int step=1;
+      String chr=" ";
+      switch(s){
+         case 2:step=2;chr="  ";break;
+         case 5:step=5;chr="     ";break;
+         case 10:step=10;chr="          ";break;
+         case 20:step=20;chr="                    ";break;
+      }
+      String all="";
+      for(int i=0;i<len;i+=step)all+=chr;
+      return all;
+   }
+
    public static String N(int n,int s){
       int len=n;
       int step=1;

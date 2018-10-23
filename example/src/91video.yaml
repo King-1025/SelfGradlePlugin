@@ -3,22 +3,19 @@ type: RANGE
 _91video:
   - !X
     name: page 
-    rule: "sed ..." 
-  - !X
-    name: list
-    rule: "sed ..."
+    rule: sed -n "/viewkey.*title/p" ${data} | sed 's/\(.*\)="\(.*\)" \(.*\)/\2/g' 
   - !X
     name: view
     save:
       - !R
         tag: title
         type: TEXT
-        action: "sed ..."
+        action: sed -n "/<title>/p" ${data} | sed "s/\(.*\)>\(.*\)/\2/g" | sed s/[[:space:]]//g
       - !R
         tag: poster
         type: URL
-        action: "sed ..."
+        action: sed -n "/poster/p" ${data} | sed 's/\(.*\)="\(.*\)" \(.*\)/\2/g'
       - !R
         tag: video
         type: URL
-        action: "sed ..."
+        action: sed -n "/source/p" ${data} | sed 's/\(.*\)="\(.*\)" \(.*\)/\2/g' | sed 's/185.38.13.130/192.240.120.34/' | sed 's/185.38.13.159/192.240.120.34/'

@@ -1,12 +1,12 @@
 site: http://91porn.com/v.php?next=watch&page=
-type: RANGE
+type: SINGLE
 doubiSSR:
   - !X
     name: page 
-    rule: "sed ..." 
+    rule: "echo s1 s2 s3" 
   - !X
     name: list
-    rule: "sed ..."
+    rule: "echo s1 s2 s3"
   - !X
     name: view
     save:

@@ -58,7 +58,8 @@ public class BornTask extends SpiderTask{
          R.command.SET_CURL_OPTION+"\n"+
          R.command.SET_SAVE_TYPE+"\n"+
          R.command.SET_SAVE_FILE+"\n"+
-         R.command.SET_SELF_UA+"\n";
+         R.command.SET_SELF_UA+"\n"+
+         R.command.SET_RANGE_HANDLE+"\n";
          SpiderFeature feature=spider.getFeature();
          if(feature!=null){
            if(feature.getEnableProcess()){

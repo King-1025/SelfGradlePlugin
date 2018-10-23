@@ -80,8 +80,12 @@ public class GrowTask extends SpiderTask{
                for(String fun:listFun){
                   content+="\n  "+fun;
                }
+               for(String fun:listFun){
+                  content+="\n  log i \""+fun+" TOTAL:${"+fun+"_CRAWL_TOTAL}\"";
+               }
              }
          }
+         content+="\n  log i \"all crawl tasks finished!\"";
          content+="\n}";
          TaskTool.write(writer,content,true,true);  
       }

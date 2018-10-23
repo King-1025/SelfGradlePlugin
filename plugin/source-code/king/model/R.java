@@ -3,7 +3,8 @@ package king.model;
 public final class R{
 
   public static final class def {
-    
+         
+     public static final String MISSING_NAME_PREFIX="dimension";    
      public static final String NAME_LINK_CHAR="-";
 
      public static final String SPACE_SITE="site";
@@ -73,6 +74,8 @@ public final class R{
      public static final String VERSION="VERSION";
      public static final String INTENT="INTENT";
      public static final String CACHE="CACHE";
+     public static final String RANGE_END="RANGE_END";
+     public static final String RANGE_START="RANGE_START";
   }
 
   public static final class value {
@@ -80,9 +83,14 @@ public final class R{
      public static final String CURL_OPTION="-#";
      public static final String SAVE_TYPE=".html";
      public static final String RANGE="0:2";
+     public static final String RANGE_START="0";
+     public static final String RANGE_END="2";
      public static final int PROCESS=1;
      public static final int LOG_LEVEL=1;
      public static final String LOG_STYLE="middle";
+     public static final String HTAB="  ";
+     public static final String TAB=HTAB+HTAB;
+     public static final String DTAB=TAB+TAB; 
   }
   
   public static final class file {
@@ -111,6 +119,7 @@ public final class R{
     public static final String SET_LOG_STYLE=var.LOG_STYLE+"=\""+value.LOG_STYLE+"\"";
     public static final String SET_RANGE=var.RANGE+"=\""+value.RANGE+"\"";
     public static final String SET_CACHE=var.CACHE+"=0";
+    public static final String SET_RANGE_HANDLE=var.RANGE_START+"="+value.RANGE_START+"\n"+var.RANGE_END+"="+value.RANGE_END;
   }
 
 }
