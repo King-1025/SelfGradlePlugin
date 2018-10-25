@@ -50,7 +50,7 @@ public class AdultTask extends SpiderTask{
        name+=TaskTool.checkValue(R.def.NAME_LINK_CHAR,spider.getDescription().getVersion());
        name+=R.def.SPIDER_FILE_SUBFIX;
        File tmp=project.file(path+File.separator+name);
-       Log.q("adult()","tmp path:"+tmp.getPath());
+       Log.q("adult()","path:"+tmp.getPath());
        if(project.file(spider.getTempFilePath()).renameTo(tmp)){
           if(!write(tmp)) throw AdultException.faildMakeSpider(spider.getName());
        }else{

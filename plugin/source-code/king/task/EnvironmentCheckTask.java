@@ -63,7 +63,8 @@ public class EnvironmentCheckTask extends SpiderTask{
              config=config.trim().replace(R.def.CONFIG_PATH_SEPARATOR,File.separator);
              config=extension.getNest().getGrowthArea()+File.separator+config;
              if(TaskTool.isFile(project,config)){
-                space.setConfig(config);
+               //在某些情况下，config需要全路径，否则，会导致Yaml解析时，找不到配置文件
+               space.setConfig(project.file(config).getPath());
              }else{
                 throw SpaceException.invalidConfig(config);
              }
