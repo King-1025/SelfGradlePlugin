@@ -81,7 +81,8 @@ public class GrowTask extends SpiderTask{
                   content+="\n  "+fun;
                }
                for(String fun:listFun){
-                  content+="\n  log i \""+fun+" TOTAL:${"+fun+"_CRAWL_TOTAL}\"";
+                  content+="\n  log i \""+fun+" TOTAL:$(read_record TOTAL ${record_"+fun+"}) SAVE:$(read_record SAVE ${record_"+fun+"})\"";
+                  content+="\n  rm -rf ${record_"+fun+"}";
                }
              }
          }

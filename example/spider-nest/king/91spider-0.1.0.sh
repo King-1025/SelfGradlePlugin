@@ -10,16 +10,16 @@
 ROOT=.
 REQUIREMENT="curl sed ua awk"
 CURL_OPTION="-#"
-SAVE_TYPE=".html"
-SAVE_FILE="./output.html"
+SAVE_TYPE="html"
+SAVE_FILE="$ROOT/output"
 SELF_UA=0
 RANGE_START=0
 RANGE_END=2
-PROCESS=1
+PROCESS=10
 RANGE="0:2"
 LOG_FILE="--"
 LOG_LEVEL=1
-LOG_STYLE="middle"
+LOG_STYLE="default"
 VERSION="0.1.0"
 INTENT="抓取91视频"
 
@@ -44,13 +44,13 @@ function check()
       log i "check $i ..."
       which $i > /dev/null  2>&1
       if [ $? -ne 0 ]; then
-	 if [ "$i" == "ua" ]; then
+   if [ "$i" == "ua" ]; then
             SELF_UA=1
-	    log w "use self ua instead."
+      log w "use self ua instead."
          else
-	    log e "$i not found!"
-	    let nc+=1
-	 fi
+      log e "$i not found!"
+      let nc+=1
+   fi
       fi
       log i "$i is exist!"
   done
@@ -65,19 +65,20 @@ function check()
 function parse_args()
 {
   eval set -- "$@"
-  local O=$(getopt -a -o :o:p:r:t:l:e:s:cvh -l :output:,process:,range:,save-type:,log-file:,log-level:,log-style:,cache,version,help "$@")
+  local O=$(getopt -a -o :o:p:r:t:l:e:s:civh -l :output:,process:,range:,save-type:,log-file:,log-level:,log-style:,cache,show-config,version,help "$@")
   eval set -- "$O"
   while true; do
         case "$1" in
-	-o|--output) may_set "SAVE_FILE" "$2"; shift 2;;
-	-p|--process) may_set "PROCESS" "$2"; shift 2;;
-	-r|--range) may_set "RANGE" "$2"; shift 2;;
-	-t|--save-type) may_set "SAVE_TYPE" "$2"; shift 2;;
-	-l|--log-file) may_set "LOG_FILE" "$2"; shift 2;;
-	-e|--log-level) may_set "LOG_LEVEL" "$2"; shift 2;;
-	-s|--log-style) may_set "LOG_STYLE" "$2"; shift 2;;
+        -o|--output) may_set "SAVE_FILE" "$2"; shift 2;;
+        -p|--process) may_set "PROCESS" "$2"; shift 2;;
+        -r|--range) may_set "RANGE" "$2"; shift 2;;
+        -t|--save-type) may_set "SAVE_TYPE" "$2"; shift 2;;
+        -l|--log-file) may_set "LOG_FILE" "$2"; shift 2;;
+        -e|--log-level) may_set "LOG_LEVEL" "$2"; shift 2;;
+        -s|--log-style) may_set "LOG_STYLE" "$2"; shift 2;;
         -c|--cache) may_set "CACHE" 1; shift;;
-	-v|--version) echo "$VERSION"; exit 0; shift;;
+        -i|--show-config) show; exit 0; shift;;
+        -v|--version) echo "$VERSION"; exit 0; shift;;
         -h|--help) help; exit 0; shift;;
         --) shift; break;;
         *) echo "Error!"; exit 1;;
@@ -171,9 +172,6 @@ function prepare()
      fi
    fi
 
-   rm -f .page_tmp*
-   rm -f .view_tmp*
-
    buid_FIFO
 }
 
@@ -182,8 +180,12 @@ function free()
    log d "close FIFO"
    exec 6>&-
    log d "make clean"
-   rm -f .page_tmp*
-   rm -f .view_tmp*
+   clean_tmp
+}
+
+function clean_tmp()
+{
+  rm $(dirname $(mktemp -u))/tmp.* > /dev/null 2>&1
 }
 
 function clock_end()
@@ -222,7 +224,7 @@ function help()
 
 function print_about()
 {
-   return 0  
+   return 0
 }
 
 function print_usage()
@@ -235,7 +237,7 @@ function print_usage()
   is_register "PROCESS"
   [[ $? -eq 1 ]] && usage+="[-p number] "
   is_register "RANGE"
-  [[ $? -eq 1 ]] && usage+="[-r start end] "
+  [[ $? -eq 1 ]] && usage+="[-r start:end] "
   is_register "SAVE_TYPE"
   [[ $? -eq 1 ]] && usage+="[-t txt|html|file] "
   is_register "LOG_FILE"
@@ -247,13 +249,14 @@ function print_options()
 {
   printf "Options:\n" 
   may_printf "SAVE_FILE" "\t-o | --output\t\t%s\n" "设置输出文件"  
-  may_printf "PROCESS" "\t-p | --process\t\t%s\n" "设置进程数，默认:8"
-  may_printf "RANGE" "\t-r | --range\t\t%s\n" "指定抓取范围,默认:[0,3]"
+  may_printf "PROCESS" "\t-p | --process\t\t%s\n" "设置进程数，默认:10"
+  may_printf "RANGE" "\t-r | --range\t\t%s\n" "指定抓取范围,默认:[0,2]"
   may_printf "SAVE_TYPE" "\t-t | --save-type\t%s\n" "保存类型(txt,html,file)"
   may_printf "LOG_FILE" "\t-l | --log-file\t\t%s\n" "设置日志文件"
   may_printf "LOG_LEVEL" "\t-e | --log-level\t%s\n" "日志等级(debug,info,warn,error)"
   may_printf "LOG_STYLE" "\t-s | --log-style\t%s\n" "日志风格(default,less,middle,more)"
   may_printf "CACHE" "\t-c | --cache\t\t%s\n" "尝试使用上次的缓存"
+  printf "\t-i | --show-config\t%s\n" "显示当前配置"
   may_printf "VERSION" "\t-v | --version\t\t%s\n" "打印版本信息"
   printf "\t-h | --help\t\t%s\n\n" "显示帮助"
 }
@@ -304,13 +307,15 @@ function fetch()
 
 function is_null()
 {
+ if [ $# -eq 3 ]; then
   if [ "$2" == "" ]; then
-      log w "$1 is empty!"
-      return 0
-  else
-      log i "$1:$2"
+      log w "$1 is empty!($3)"
       return 1
+  else
+      log i "$1:$2($3)"
+      return 0
   fi
+ fi
 }
 
 function buid_FIFO()
@@ -397,11 +402,173 @@ function gen_ua()
 {
   if [ $SELF_UA == 1 ]; then
       local user_agent=("Mozilla/5.0 (Windows NT 10.0; rv:46.0) Gecko/20100101 Firefox/46.0" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2870.18 Safari/537.36" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:45.0) Gecko/20100101 Firefox/45.0" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:51.0) Gecko/20100101 Firefox/51.0" "Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 6.3; Trident/4.0)" "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2917.90 Safari/537.36" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0" "Mozilla/5.0 (X11; Linux i686 on x86_64; rv:45.0) Gecko/20100101 Firefox/45.0" "Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2792.54 Safari/537.36" "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.2; Win64; x64; Trident/5.0)" "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2818.55 Safari/537.36" "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2676.60 Safari/537.36" "Mozilla/5.0 (Windows NT 6.3; rv:46.0) Gecko/20100101 Firefox/46.0" "Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2896.66 Safari/537.36" "Mozilla/5.0 (X11; Linux i686 on x86_64; rv:48.0) Gecko/20100101 Firefox/48.0" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:50.0) Gecko/20100101 Firefox/50.0" "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:48.0) Gecko/20100101 Firefox/48.0" "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 5.1; WOW64; Trident/6.0)" "Mozilla/5.0 (X11; Linux i686; rv:46.0) Gecko/20100101 Firefox/46.0" "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:45.0) Gecko/20100101 Firefox/45.0" "Mozilla/5.0 (X11; Linux x86_64; rv:48.0) Gecko/20100101 Firefox/48.0" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:46.0) Gecko/20100101 Firefox/46.0" "Mozilla/5.0 (X11; Linux i686; rv:49.0) Gecko/20100101 Firefox/49.0" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2912.44 Safari/537.36" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:49.0) Gecko/20100101 Firefox/49.0" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:49.0) Gecko/20100101 Firefox/49.0" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:49.0) Gecko/20100101 Firefox/49.0" "Mozilla/5.0 (Windows NT 6.1; Win64; x64; Trident/7.0; rv:11.0) like Gecko")
-      local min=0                                                                  local max=$((${#user_agent[@]}-1))
+      local min=0
+      local max=$((${#user_agent[@]}-1))
       local index=$(rand $min $max)
       echo ${user_agent[$index]}
-  else 
+  else
       echo $(ua)
+  fi
+}
+
+function init_record()
+{
+  if [ $# -eq 1 ]; then
+    echo "TOTAL:0" > $1
+    echo "SAVE:0" >> $1
+  else 
+    log e "init_record() needs 1 argument"
+  fi
+}
+
+function read_record()
+{
+  if [ $# -eq 2 ]; then
+    if [ -e "$2" ]; then
+      awk -F ":" -v key=$1 '{if($1 == key) print $2 }' $2
+    fi
+ fi
+}
+
+function write_record()
+{
+  if [ $# -eq 3 ]; then
+    if [ -e "$3" ]; then
+      sed -i "s/$1:.*/$1:$2/g" $3
+    fi
+ fi
+}
+
+function update_record()
+{
+  if [ $# -eq 4 ]; then
+    is_number $3
+    if [ $? -eq 0 ]&&[ -e "$4" ]; then
+      local value=$(read_record $2 $4)
+      is_number $value
+      if [ $? -eq 0 ]; then
+        if [ "$1" == "+" ]; then
+          value=$(($value + $3))
+        elif [ "$1" == "-" ]; then
+          value=$(($value - $3))
+        elif [ "$1" == "×" ]; then
+          value=$(($value * $3))
+        elif [ "$1" == "÷" ]; then
+          value=$(($value / $3))
+        fi
+        write_record $2 $value $4
+      fi
+    fi
+  else
+    log e "update_record() needs 4 argument"
+  fi
+}
+
+function plus_record()
+{
+  update_record + "$@"
+}
+
+function init_html()
+{
+if [ $# -eq 2 ]; then echo \
+"<!DOCTYPE Html>
+ <html>
+ <head><title>$2 "$(date "+%Y-%M-%d %H:%M:%S")"</title>
+ <meta charset=\"utf-8\">
+ <style>
+ div{border:2px solid #333333;} 
+ p{font-size:20px;}
+ </style>
+ </head>
+ <body align=\"center\">" > $1
+fi
+}
+
+function may_fix_html()
+{
+ if [ $# -eq 1 ]; then
+  if [ "$SAVE_TYPE" == "html" ]; then
+    local file="${SAVE_FILE}-${1}.${SAVE_TYPE}"
+    if [ -e "$file" ]; then
+     echo "</body>" >> $file
+     echo "</html>" >> $file
+    fi
+  fi
+ fi
+}
+
+function do_save()
+{
+  local list=$1
+  local part=$2
+  if [ "$SAVE_TYPE" == "txt" ]; then
+     local result="${SAVE_FILE}-${part}.${SAVE_TYPE}"
+     if [ ! -e "$result" ]; then
+        touch "$result"
+        log i "create file:$result"
+     fi
+     awk -F "*" -v file="$result" '{print $1":"$3 >> file }' "$list"
+     echo "" >> "$result"
+  elif [ "$SAVE_TYPE" == "html" ]; then
+     local result="${SAVE_FILE}-${part}.${SAVE_TYPE}"
+     if [ ! -e "$result" ]; then
+        touch "$result"
+        init_html "$result" "$part"
+  log i "create file:$result"
+     fi
+     awk -F "*" -v file="$result" \
+     'BEGIN{html="<div>"} {
+       if($2 == "IMAGE"){
+         html=html"<img src=\""$3"\" width=\"100%\"/><hr>"
+       } else if( $2 == "URL" || $2 == "VIDEO" || $2 == "MUSIC"){
+         html=html"<a href=\""$3"\"><p>查看"$1"</p></a><br>"
+       } else{
+         html=html"<p>"$3"</p><br>"
+       }
+     }END{html=html"</div>";print html >> file}' "$list"
+  elif [ "$SAVE_TYPE" == "file" ]; then
+      if [ ! -e "$SAVE_FILE" ]; then
+         mkdir -p "$SAVE_FILE"
+         log i "create dir:$SAVE_FILE"
+      fi
+      local result=($(awk -F "*" '{if($1 == "title" && $2 == "TEXT")print $3}' $list))
+      if [ "$result" == "" ]; then
+         result=$(mktmp -u result.XXXXXX)"~"$(date +%Y-%M-%d_%H:%M:%S)
+      fi
+      result="$SAVE_FILE/$part/$result"
+      if [ ! -e "$result" ]; then
+         mkdir -p "$result"
+      fi
+      awk -F "*" -v dir="$result" '{
+        subfix="NONE"
+        if($2 == "IMAGE"){
+          subfix="jpg"
+        }else if($2 == "VIDEO"){
+          subfix="mp4"
+        }else if($2 == "MUSIC"){
+          subfix="mp3"
+        }
+        if(subfix != "NONE"){
+         system("curl -# -L -o "dir"/"$1"."subfix" "$3)
+        }else{
+         system("echo \""$1":"$3"\" >> "dir"/others")
+        } }' "$list"
+       if [ -e "$result/others" ];then
+          echo "" >> $result/others
+       fi
+ fi
+}
+
+function save()
+{
+  if [ $# -eq 3 ]; then
+   if [ -e "$1" ]; then
+      do_save $1 $3
+      if [ $? -eq 0 ]; then
+        plus_record SAVE 1 $2
+      fi
+   fi
   fi
 }
  
@@ -409,13 +576,14 @@ function gen_ua()
 function _91video()
 {
   log i "_91video start..."
-  export _91video_CRAWL_TOTAL=0
+  record__91video=$ROOT/._91video_crawl_record
+  init_record ${record__91video}
   for((index=${RANGE_START};index<=${RANGE_END};index++));do
    declare -a page=("http://91porn.com/v.php?next=watch&page=${index}")
    for i0 in ${page}; do
     read -u 6
     {
-    data=".d$(rand 1 10)$(rand 11 20)$(rand 21 30)$(date +%H%M%s)"
+    data=$(mktemp -u)
     log i "fetch ${i0}"
     fetch "${data}" "${i0}" "${i0}"
     if [ $? != 0 ]||[ ! -e ${data} ];then continue; fi
@@ -424,17 +592,23 @@ function _91video()
     for i1 in ${view}; do
      read -u 6
      {
-     data=".d$(rand 1 10)$(rand 11 20)$(rand 21 30)$(date +%H%M%s)"
+     data=$(mktemp -u)
      log i "fetch ${i1}"
      fetch "${data}" "${i1}" "${i1}"
      if [ $? != 0 ]||[ ! -e ${data} ];then continue; fi
+     local list=$(mktemp -u)
      local title=$(sed -n "/<title>/p" ${data} | sed "s/\(.*\)>\(.*\)/\2/g" | sed s/[[:space:]]//g)
-     is_null "title" "${title}"
+     is_null "title" "${title}" $(read_record SAVE ${record__91video})
+     if [ $? -eq 0 ]; then echo "title*TEXT*${title}" >> ${list}; fi
      local poster=$(sed -n "/poster/p" ${data} | sed 's/\(.*\)="\(.*\)" \(.*\)/\2/g')
-     is_null "poster" "${poster}"
+     is_null "poster" "${poster}" $(read_record SAVE ${record__91video})
+     if [ $? -eq 0 ]; then echo "poster*IMAGE*${poster}" >> ${list}; fi
      local video=$(sed -n "/source/p" ${data} | sed 's/\(.*\)="\(.*\)" \(.*\)/\2/g' | sed 's/185.38.13.130/192.240.120.34/' | sed 's/185.38.13.159/192.240.120.34/')
-     is_null "video" "${video}"
-     export _91video_CRAWL_TOTAL=$((${_91video_CRAWL_TOTAL}+1))
+     is_null "video" "${video}" $(read_record SAVE ${record__91video})
+     if [ $? -eq 0 ]; then echo "video*URL*${video}" >> ${list}; fi
+     save ${list} ${record__91video} "_91video"
+     rm -rf ${list} > /dev/null 2>&1
+     plus_record TOTAL 1 ${record__91video}
      rm ${data} > /dev/null 2>&1
      echo >&6
      } &
@@ -445,13 +619,15 @@ function _91video()
     done
     wait
   done
+  may_fix_html "_91video"
   log i "_91video done!"
 }
 
 function crawl()
 {
   _91video
-  log i "_91video TOTAL:${_91video_CRAWL_TOTAL}"
+  log i "_91video TOTAL:$(read_record TOTAL ${record__91video}) SAVE:$(read_record SAVE ${record__91video})"
+  rm -rf ${record__91video}
   log i "all crawl tasks finished!"
 }
 

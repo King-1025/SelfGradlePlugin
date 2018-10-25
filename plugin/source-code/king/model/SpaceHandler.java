@@ -22,10 +22,12 @@ public class SpaceHandler implements Parser{
         if(track==null){
            track=new ArrayList<>();
         }
-        String content="function "+space.getName()+"()\n{";
-        String total=space.getName()+"_CRAWL_TOTAL";
-        content+="\n"+TaskTool.E(1,2)+"log i \""+space.getName()+" start...\"";
-        content+="\n"+TaskTool.E(1,2)+"export "+total+"=0";
+        String funName=space.getName();
+        String content="function "+funName+"()\n{";
+        String record="$ROOT/."+funName+R.def.CRAWL_RECORD_SUBFIX;
+        content+="\n"+TaskTool.E(1,2)+"log i \""+funName+" start...\"";
+        content+="\n"+TaskTool.E(1,2)+"record_"+funName+"="+record;
+        content+="\n"+TaskTool.E(1,2)+"init_record ${record_"+funName+"}";
         String site=space.getSite();
         String type=space.getType();
         Object[] structure=space.getStructure().toArray(); 
@@ -42,18 +44,18 @@ public class SpaceHandler implements Parser{
           emp+=" ";
           content+=emp+"read -u 6";
           content+=emp+"{";
-          content+=emp+"data=\".d$(rand 1 10)$(rand 11 20)$(rand 21 30)$(date +%H%M%s)\"";
+          content+=emp+"data=$(mktemp -u)";
           content+=emp+"log i \"fetch ${i"+i+"}\"";
           content+=emp+"fetch \"${data}\" \"${i"+i+"}\" \"${i"+i+"}\"";
           content+=emp+"if [ $? != 0 ]||[ ! -e ${data} ];then continue; fi";
-          content+=handleSave(emp,dim.getSave());
+          content+=handleSave(emp,dim.getSave(),funName);
           rule=dim.getRule();
           if(!TaskTool.isNull(rule)&&(i+1<size)){
             dim=(Dimension)structure[i+1];
             content+=emp+"declare -a "+getVarName(i+1,dim)+"=$("+rule+")";
           }else{
             if(i+1==size){
-              content+=emp+"export "+total+"=$((${"+total+"}+1))";
+              content+=emp+"plus_record TOTAL 1 ${record_"+funName+"}";
             }else{
               throw ParseException.notFoundRule(dim.getName());    
             }
@@ -66,9 +68,10 @@ public class SpaceHandler implements Parser{
            content+=track.get(i);
         }
         track=null;
-        content+="\n"+TaskTool.E(1,2)+"log i \""+space.getName()+" done!\"";
+        content+="\n"+TaskTool.E(1,2)+"may_fix_html \""+funName+"\"";
+        content+="\n"+TaskTool.E(1,2)+"log i \""+funName+" done!\"";
         content+="\n}";
-        functions.add(space.getName());
+        functions.add(funName);
         return content;
     }
 
@@ -81,19 +84,23 @@ public class SpaceHandler implements Parser{
         else return src;
     }
 
-    private String handleSave(String emp,List save){
+    private String handleSave(String emp,List save,String funName){
         String content="";
         if(save!=null){
           Rule rule=null;
           String tag=null;
+          content+=emp+"local list=$(mktemp -u)";
           for(Object obj:save){
             rule=(Rule)obj;
             tag=rule.getTag();
             if(!TaskTool.isNull(tag)){
               content+=emp+"local "+tag+"=$("+rule.getAction()+")";
-              content+=emp+"is_null \""+tag+"\" \"${"+tag+"}\"";
+              content+=emp+"is_null \""+tag+"\" \"${"+tag+"}\" $(read_record SAVE ${record_"+funName+"})";
+              content+=emp+"if [ $? -eq 0 ]; then echo \""+tag+"*"+rule.getType()+"*${"+tag+"}\" >> ${list}; fi";
             }
           }
+          content+=emp+"save ${list} ${record_"+funName+"} \""+funName+"\"";
+          content+=emp+"rm -rf ${list} > /dev/null 2>&1";
         }
         return content;
     }

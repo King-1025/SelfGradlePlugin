@@ -3,7 +3,9 @@ package king.model;
 public final class R{
 
   public static final class def {
-         
+
+     public static final String CRAWL_RECORD_SUBFIX="_crawl_record";     
+ 
      public static final String MISSING_NAME_PREFIX="dimension";    
      public static final String NAME_LINK_CHAR="-";
 
@@ -81,16 +83,13 @@ public final class R{
   public static final class value {
      public static final String TOOL="curl sed ua awk";
      public static final String CURL_OPTION="-#";
-     public static final String SAVE_TYPE=".html";
+     public static final String SAVE_TYPE="html";
      public static final String RANGE="0:2";
      public static final String RANGE_START="0";
      public static final String RANGE_END="2";
-     public static final int PROCESS=1;
+     public static final int PROCESS=10;
      public static final int LOG_LEVEL=1;
-     public static final String LOG_STYLE="middle";
-     public static final String HTAB="  ";
-     public static final String TAB=HTAB+HTAB;
-     public static final String DTAB=TAB+TAB; 
+     public static final String LOG_STYLE="default";
   }
   
   public static final class file {
@@ -111,7 +110,7 @@ public final class R{
     public static final String SET_REQUIREMENT=var.REQUIREMENT+"=\""+value.TOOL+"\"";
     public static final String SET_CURL_OPTION=var.CURL_OPTION+"=\""+value.CURL_OPTION+"\"";
     public static final String SET_SAVE_TYPE=var.SAVE_TYPE+"=\""+value.SAVE_TYPE+"\"";
-    public static final String SET_SAVE_FILE=var.SAVE_FILE+"=\""+path.ROOT_DIR+"/"+name.OUTPUT+value.SAVE_TYPE+"\"";
+    public static final String SET_SAVE_FILE=var.SAVE_FILE+"=\"$ROOT/"+name.OUTPUT+"\"";
     public static final String SET_SELF_UA=var.SELF_UA+"=0";
     public static final String SET_PROCESS=var.PROCESS+"="+value.PROCESS;
     public static final String SET_LOG_FILE=var.LOG_FILE+"=\"--\"";
