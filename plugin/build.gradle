@@ -15,7 +15,7 @@ jar {
 
 buildDir "$projectDir/plugin-build"
 
-version="0.0.1-SNAPSHOT"
+version="0.0.2-SNAPSHOT"
 //group="king.plugin"
 description "脚本蜘蛛插件工程"
 
