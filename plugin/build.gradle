@@ -15,7 +15,7 @@ jar {
 
 buildDir "$projectDir/plugin-build"
 
-version="0.0.0-SNAPSHOT"
+version="0.0.1-SNAPSHOT"
 //group="king.plugin"
 description "脚本蜘蛛插件工程"
 
@@ -47,7 +47,7 @@ pluginBundle {
            displayName = '脚本蜘蛛'
            description = '一个生成脚本蜘蛛的插件'
            tags = ['shell', 'template','spider']
-           version = '0.0-zero'
+           version = '0.1.0-beta'
         }   
     } 
 }
