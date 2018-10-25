@@ -33,7 +33,7 @@ public class BornTask extends SpiderTask{
   }
   
   private boolean writeHead(Writer writer,SpiderDescriptor descriptor){
-   Log.q("writeHead()","I am called.");
+   Log.q("writeHead()","ok!");
    if(descriptor!=null&&writerStatus){
      String content=R.tag.SCRIPT_HEAD+
      TaskTool.checkValue("\n"+R.tag.INTENT,descriptor.getIntent())+
@@ -51,7 +51,7 @@ public class BornTask extends SpiderTask{
 
   private boolean writeParma(Writer writer,Spider spider){
        if(writerStatus){
-         Log.q("writeParma()","I am called.");
+         Log.q("writeParma()","ok!");
          String content=TaskTool.N(1,2)+
          R.command.SET_ROOT+"\n"+
          R.command.SET_REQUIREMENT+"\n"+
@@ -100,7 +100,7 @@ public class BornTask extends SpiderTask{
 
   private boolean writeFunc(Writer writer){
       if(writerStatus){
-         Log.q("writeFunc()","I am called.");
+         Log.q("writeFunc()","ok!");
          String content=TaskTool.N(1,2)+TaskTool.getResourceString(project,R.file.FUNCTION);
          return TaskTool.write(writer,content,true,!writerStatus);
       }else{
@@ -110,7 +110,7 @@ public class BornTask extends SpiderTask{
   
   private boolean writeOther(Writer writer){
        if(writerStatus){
-         Log.q("writeOther()","I am called.");
+         Log.q("writeOther()","ok!");
          String content=" ";
          content=" ";
          writerStatus=false;

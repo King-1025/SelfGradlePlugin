@@ -47,7 +47,7 @@ pluginBundle {
            displayName = '脚本蜘蛛'
            description = '一个生成脚本蜘蛛的插件'
            tags = ['shell', 'template','spider']
-           version = '0.1.0-beta'
+           version = '0.1.1-beta'
         }   
     } 
 }
