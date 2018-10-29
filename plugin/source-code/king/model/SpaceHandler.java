@@ -32,7 +32,7 @@ public class SpaceHandler implements Parser{
         String type=space.getType();
         Object[] structure=space.getStructure().toArray(); 
         int size=structure.length;
-        Log.q("genCrawlFunction()","size:"+size);
+        Log.q(funName+":genCrawlFunction()","size:"+size);
         Dimension dim=null;
         String rule=null;
         String emp=null;
@@ -88,23 +88,78 @@ public class SpaceHandler implements Parser{
         String content="";
         if(save!=null){
           Rule rule=null;
+          String mode=null;
           String tag=null;
-          content+=emp+"local list=$(mktemp -u)";
-          for(Object obj:save){
-            rule=(Rule)obj;
+          List<Rule> uniMode=null;
+          List<Rule> arrMode=null;
+          for(Object item:save){
+            rule=(Rule)item;
+            mode=rule.getMode();
             tag=rule.getTag();
-            if(!TaskTool.isNull(tag)){
-              content+=emp+"local "+tag+"=$("+rule.getAction()+")";
-              content+=emp+"is_null \""+tag+"\" \"${"+tag+"}\" $(read_record SAVE ${record_"+funName+"})";
-              content+=emp+"if [ $? -eq 0 ]; then echo \""+tag+"*"+rule.getType()+"*${"+tag+"}\" >> ${list}; fi";
+            if(TaskTool.isNull(tag)){continue;}
+            if(TaskTool.isNull(mode)){
+              //默认mode为UNIQUE
+              mode=Rule.MODE_UNIQUE;
+            }
+            if(Rule.MODE_UNIQUE.equals(mode)){
+              if(uniMode==null){uniMode=new ArrayList<>();}
+              uniMode.add(rule);  
+            }else if(Rule.MODE_ARRAY.equals(mode)){
+              if(arrMode==null){arrMode=new ArrayList<>();}
+              arrMode.add(rule);
+            }else{
+              throw ParseException.notFoundMode(mode);
             }
           }
-          content+=emp+"save ${list} ${record_"+funName+"} \""+funName+"\"";
+          content+=emp+"local list=$(mktemp -u)";
+          content+=handleUniqueMode(emp,uniMode,funName);
+          content+=handleArrayMode(emp,arrMode,funName); 
           content+=emp+"rm -rf ${list} > /dev/null 2>&1";
+        }
+        return content;
+}
+
+    private String handleUniqueMode(String emp,List<Rule> save,String funName){
+        String content="";
+        if(save!=null){
+          String tag=null;
+          for(Rule rule:save){
+            tag=rule.getTag();
+            content+=emp+"local "+tag+"=$("+rule.getAction()+")";
+            content+=emp+"is_null \""+tag+"\" \"${"+tag+"}\" $(read_record SAVE ${record_"+funName+"})";
+            content+=emp+"if [ $? -eq 0 ]; then echo \""+tag+"*"+maybeUse(rule.getType(),Rule.TYPE_TEXT)+"*${"+tag+"}*"+maybeUse(rule.getProfile(),"")+"\" >> ${list}; fi";
+          }
+          content+=emp+"save ${list} ${record_"+funName+"} \""+funName+"\"";
         }
         return content;
     }
 
+    private String handleArrayMode(String emp,List<Rule> save,String funName){
+       String content="";
+       if(save!=null){
+         String tag=null;
+         String action="";
+         boolean isFirst=true;
+         content+=emp+"local size=0";
+         for(Rule rule:save){
+           tag=rule.getTag();
+           content+=emp+"local "+tag+"=($("+rule.getAction()+" | sed \"s/ //g\"))";
+           content+=emp+"is_null \""+tag+"\" \"${"+tag+"}\" $(read_record SAVE ${record_"+funName+"})";
+           content+=emp+"if [ ${size} -lt ${#"+tag+"[@]} ]; then size=${#"+tag+"[@]}; fi";
+           action+=emp+TaskTool.E(1,2)+"echo \""+tag+"*"+maybeUse(rule.getType(),Rule.TYPE_TEXT)+"*${"+tag+"[i]}*"+maybeUse(rule.getProfile(),"")+"\" ";
+           if(isFirst) action+=">";
+           else action+=">>";
+           action+=" ${list}";
+           isFirst=false;
+         }
+         content+=emp+"for((i=0;i<${size};i++)); do";
+         content+=action;
+         content+=emp+TaskTool.E(1,2)+"save ${list} ${record_"+funName+"} \""+funName+"\"";
+         content+=emp+"done";
+       }
+       return content;  
+    }
+  
     private String handleStart(String site,String type,Dimension dim){
       String content="\n"+TaskTool.E(1,2);
       String var=getVarName(0,dim);

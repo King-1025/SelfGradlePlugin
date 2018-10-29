@@ -474,7 +474,7 @@ function init_html()
 if [ $# -eq 2 ]; then echo \
 "<!DOCTYPE Html>
  <html>
- <head><title>$2 "$(date "+%Y-%M-%d %H:%M:%S")"</title>
+ <head><title>$2 "$(date "+%Y-%m-%d %H:%M:%S")"</title>
  <meta charset=\"utf-8\">
  <style>
  div{border:2px solid #333333;} 
@@ -522,7 +522,11 @@ function do_save()
        if($2 == "IMAGE"){
          html=html"<img src=\""$3"\" width=\"100%\"/><hr>"
        } else if( $2 == "URL" || $2 == "VIDEO" || $2 == "MUSIC"){
-         html=html"<a href=\""$3"\"><p>查看"$1"</p></a><br>"
+         tmp=""$4
+         if(tmp == ""){
+           tmp="查看"$1
+         }
+         html=html"<a href=\""$3"\"><p>"tmp"</p></a><br>"
        } else{
          html=html"<p>"$3"</p><br>"
        }
@@ -534,7 +538,7 @@ function do_save()
       fi
       local result=($(awk -F "*" '{if($1 == "title" && $2 == "TEXT")print $3}' $list))
       if [ "$result" == "" ]; then
-         result=$(mktmp -u result.XXXXXX)"~"$(date +%Y-%M-%d_%H:%M:%S)
+         result=$(mktemp -u result.XXXXXX)"~"$(date +%Y-%m-%d_%H:%M:%S)
       fi
       result="$SAVE_FILE/$part/$result"
       if [ ! -e "$result" ]; then
@@ -550,10 +554,10 @@ function do_save()
           subfix="mp3"
         }
         if(subfix != "NONE"){
-         system("curl -# -L -o "dir"/"$1"."subfix" "$3)
+          cmd="curl -# -L -o "dir"/"$1"."subfix" "$3
         }else{
-         system("echo \""$1":"$3"\" >> "dir"/others")
-        } }' "$list"
+          cmd="echo \""$1":"$3"\" >> "dir"/others"
+        }system(cmd)}' "$list"
        if [ -e "$result/others" ];then
           echo "" >> $result/others
        fi
@@ -599,13 +603,13 @@ function _91video()
      local list=$(mktemp -u)
      local title=$(sed -n "/<title>/p" ${data} | sed "s/\(.*\)>\(.*\)/\2/g" | sed s/[[:space:]]//g)
      is_null "title" "${title}" $(read_record SAVE ${record__91video})
-     if [ $? -eq 0 ]; then echo "title*TEXT*${title}" >> ${list}; fi
+     if [ $? -eq 0 ]; then echo "title*TEXT*${title}*" >> ${list}; fi
      local poster=$(sed -n "/poster/p" ${data} | sed 's/\(.*\)="\(.*\)" \(.*\)/\2/g')
      is_null "poster" "${poster}" $(read_record SAVE ${record__91video})
-     if [ $? -eq 0 ]; then echo "poster*IMAGE*${poster}" >> ${list}; fi
+     if [ $? -eq 0 ]; then echo "poster*IMAGE*${poster}*" >> ${list}; fi
      local video=$(sed -n "/source/p" ${data} | sed 's/\(.*\)="\(.*\)" \(.*\)/\2/g' | sed 's/185.38.13.130/192.240.120.34/' | sed 's/185.38.13.159/192.240.120.34/')
      is_null "video" "${video}" $(read_record SAVE ${record__91video})
-     if [ $? -eq 0 ]; then echo "video*URL*${video}" >> ${list}; fi
+     if [ $? -eq 0 ]; then echo "video*URL*${video}*查看视频" >> ${list}; fi
      save ${list} ${record__91video} "_91video"
      rm -rf ${list} > /dev/null 2>&1
      plus_record TOTAL 1 ${record__91video}

@@ -45,6 +45,9 @@ shspider {
      _91video {
         config="91video.yaml"
      }
+     doubiSSR {
+        config="doubiSSR.yaml"
+     }
    }
 
 }
