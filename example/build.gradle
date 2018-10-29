@@ -26,7 +26,7 @@ shspider {
   spiders {
       spider {
          id="91spider"
-         master=["_91video"]
+         master=["_91video","doubiSSR"]
          description {
              author="King-1025"
              email="1543641386@qq.com"
@@ -44,6 +44,9 @@ shspider {
   web {
      _91video {
         config="91video.yaml"
+     }
+     doubiSSR {
+        config="doubiSSR.yaml"
      }
    }
 

@@ -18,4 +18,5 @@ _91video:
       - !R
         tag: video
         type: URL
+        profile: 查看视频
         action: sed -n "/source/p" ${data} | sed 's/\(.*\)="\(.*\)" \(.*\)/\2/g' | sed 's/185.38.13.130/192.240.120.34/' | sed 's/185.38.13.159/192.240.120.34/'
