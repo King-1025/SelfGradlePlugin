@@ -627,51 +627,11 @@ function _91video()
   log i "_91video done!"
 }
 
-function doubiSSR()
-{
-  log i "doubiSSR start..."
-  record_doubiSSR=$ROOT/.doubiSSR_crawl_record
-  init_record ${record_doubiSSR}
-  declare -a page=("https://doub.io/sszhfx/")
-   for i0 in ${page}; do
-    read -u 6
-    {
-    data=$(mktemp -u)
-    log i "fetch ${i0}"
-    fetch "${data}" "${i0}" "${i0}"
-    if [ $? != 0 ]||[ ! -e ${data} ];then continue; fi
-    local list=$(mktemp -u)
-    local size=0
-    local ssr_1=($(sed -n '/<pre class="prettyprint linenums" >/,+20p' ${data} | sed -n "/ssr:\/\//p" | sed "s/\(.*\)ssr\(.*\)/ssr\2/g" | sed "s/ //g"))
-    is_null "ssr_1" "${ssr_1}" $(read_record SAVE ${record_doubiSSR})
-    if [ ${size} -lt ${#ssr_1[@]} ]; then size=${#ssr_1[@]}; fi
-    local ssr_2=($(sed -n "/dl1.*ss/p" ${data} | sed 's/\(.*\)ss\(.*\)" t\(.*\)/ss\2/g' | awk -F '"' '{print $1}' | sed "s/ //g"))
-    is_null "ssr_2" "${ssr_2}" $(read_record SAVE ${record_doubiSSR})
-    if [ ${size} -lt ${#ssr_2[@]} ]; then size=${#ssr_2[@]}; fi
-    for((i=0;i<${size};i++)); do
-      echo "ssr_1*URL*${ssr_1[i]}*" > ${list}
-      echo "ssr_2*URL*${ssr_2[i]}*" >> ${list}
-      save ${list} ${record_doubiSSR} "doubiSSR"
-    done
-    rm -rf ${list} > /dev/null 2>&1
-    plus_record TOTAL 1 ${record_doubiSSR}
-    rm ${data} > /dev/null 2>&1
-    echo >&6
-    } &
-    done
-    wait
-  may_fix_html "doubiSSR"
-  log i "doubiSSR done!"
-}
-
 function crawl()
 {
   _91video
-  doubiSSR
   log i "_91video TOTAL:$(read_record TOTAL ${record__91video}) SAVE:$(read_record SAVE ${record__91video})"
   rm -rf ${record__91video}
-  log i "doubiSSR TOTAL:$(read_record TOTAL ${record_doubiSSR}) SAVE:$(read_record SAVE ${record_doubiSSR})"
-  rm -rf ${record_doubiSSR}
   log i "all crawl tasks finished!"
 }
 
